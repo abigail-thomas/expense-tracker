@@ -19,13 +19,16 @@ import IncomeVsExpense from "./pages/Dashboard/IncomeVsExpense";
 import CategoryBreakdown from "./pages/Dashboard/CategoryBreakdown";
 import Goals from "./pages/Dashboard/Goals";
 import Profile from "./pages/Dashboard/Profile";
+import NotFound from "./pages/NotFound";
 
 import UserProvider from "./context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const App = () => {
   return (
-    <UserProvider>
+    <ErrorBoundary>
+      <UserProvider>
       <div>
         <Router>
           <Routes>
@@ -51,6 +54,9 @@ const App = () => {
               <Route path="/goals" element={<Goals />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
+
+            {/* Catch-all for unknown routes */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
       </div>
@@ -61,7 +67,8 @@ const App = () => {
           style: { fontSize: "13px" },
         }}
       />
-    </UserProvider>
+      </UserProvider>
+    </ErrorBoundary>
   );
 };
 

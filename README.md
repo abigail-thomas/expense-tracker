@@ -26,27 +26,33 @@ Track income, expenses, savings funds, subscriptions, credit cards, and goals; v
 ```
 expense-tracker/
 ├── backend/                     # Express API
-│   ├── config/db.js             # Mongoose connection
-│   ├── controllers/             # auth, income, expense, dashboard
-│   ├── middleware/              # JWT auth + Multer upload
-│   ├── models/                  # User, Income, Expense
-│   ├── routes/                  # /api/v1/{auth,income,expense,dashboard}
+│   ├── config/                  # db.js (Mongoose connection) + env.js (startup validation)
+│   ├── controllers/             # auth, income, expense, dashboard, funds, cards, subs, goals
+│   ├── middleware/              # JWT auth, Multer upload, rate limiters, error handling
+│   ├── models/                  # User, Income, Expense, Fund, CreditCard, Subscription, Goal
+│   ├── routes/                  # /api/v1/{auth,income,expense,dashboard,fund,...}
+│   ├── services/                # interest + subscription schedulers, expense effects
+│   ├── tests/                   # Vitest + Supertest API tests (in-memory MongoDB)
 │   ├── uploads/                 # profile images (git-ignored)
-│   └── server.js
-└── frontend/expense-tracker/    # React + Vite app
-    └── src/
-        ├── components/          # layouts, cards, charts, forms, modal
-        ├── context/             # UserContext + provider
-        ├── hooks/useUserAuth    # loads user on protected pages
-        ├── pages/               # Auth (Login/SignUp), Dashboard (Home/Income/Expense)
-        └── utils/               # apiPaths, axiosInstance, helpers
+│   ├── app.js                   # builds the Express app (no side effects — imported by tests)
+│   ├── server.js                # boot: validate env → connect DB → start schedulers → listen
+│   └── test-server.js           # boots the app on an in-memory DB for e2e (no schedulers)
+├── frontend/expense-tracker/    # React + Vite app
+│   └── src/
+│       ├── components/          # layouts, cards, charts, forms, modal, ErrorBoundary
+│       ├── context/             # UserContext + provider
+│       ├── hooks/useUserAuth    # loads user on protected pages
+│       ├── pages/               # Auth (Login/SignUp), Dashboard (Home/Income/Expense/...), NotFound
+│       └── utils/               # apiPaths, axiosInstance, helpers (+ helper.test.js)
+├── e2e/                         # Playwright end-to-end tests (boots the full stack)
+└── .github/workflows/ci.yml     # CI: backend tests, frontend lint/unit/build, e2e on PRs
 ```
 
 ## Getting started
 
 ### Prerequisites
 
-- Node.js 18+ (tested on v24)
+- Node.js **20.19+** (required by Vite 7; pinned via `engines` in each `package.json`)
 - A free [MongoDB Atlas](https://www.mongodb.com/atlas) cluster
 
 ### 1. Backend
@@ -103,7 +109,8 @@ All routes are prefixed with `/api/v1`. Protected routes require an
 | POST   | `/auth/register`             | Create an account, returns a JWT  |  –   |
 | POST   | `/auth/login`                | Log in, returns a JWT             |  –   |
 | GET    | `/auth/getUser`              | Current user's profile            |  ✓   |
-| POST   | `/auth/upload-image`         | Upload a profile image            |  –   |
+| POST   | `/auth/upload-image`         | Upload a profile image            |  ✓   |
+| GET    | `/health`                    | Health check (status + DB state)  |  –   |
 | GET    | `/dashboard`                 | Aggregated dashboard data         |  ✓   |
 | POST   | `/income/add`                | Add an income entry               |  ✓   |
 | GET    | `/income/get`                | List income entries               |  ✓   |
@@ -123,9 +130,64 @@ All routes are prefixed with `/api/v1`. Protected routes require an
 **Backend** (`backend/`)
 - `npm run dev` — start with nodemon
 - `npm start` — start with node
+- `npm test` — run the API test suite (Vitest, one run)
+- `npm run test:watch` — run the tests in watch mode
 
 **Frontend** (`frontend/expense-tracker/`)
 - `npm run dev` — Vite dev server
 - `npm run build` — production build
 - `npm run preview` — preview the production build
 - `npm run lint` — run ESLint
+- `npm test` — run unit tests (Vitest, one run)
+- `npm run test:watch` — unit tests in watch mode
+
+**E2E** (`e2e/`)
+- `npm test` — run the Playwright end-to-end suite
+- `npm run test:headed` — run e2e with a visible browser
+- `npm run report` — open the last HTML report
+
+## Testing
+
+The project has three test layers, all runnable locally and wired into CI
+(`.github/workflows/ci.yml`):
+
+- **Backend API tests** — [Vitest](https://vitest.dev) + [Supertest](https://github.com/ladjs/supertest),
+  running against an ephemeral [`mongodb-memory-server`](https://github.com/typegoose/mongodb-memory-server)
+  so no real database is touched. Tests import `app.js` directly (which has no
+  side effects — no DB connection, schedulers, or `listen`); `server.js` layers
+  those on for production.
+
+  ```bash
+  cd backend && npm test
+  ```
+
+- **Frontend unit tests** — Vitest over the pure helpers in `src/utils/helper.js`
+  (including the money-formatting contract).
+
+  ```bash
+  cd frontend/expense-tracker && npm test
+  ```
+
+- **End-to-end** — [Playwright](https://playwright.dev) drives real user journeys
+  (sign up, log in/out, add income & expense, dashboard totals, 404, auth
+  redirects). Its config boots the whole stack on isolated ports — the backend
+  via `test-server.js` on an in-memory DB (no schedulers, so no real charges),
+  and the Vite dev server — so it never collides with a normal dev session.
+
+  ```bash
+  cd e2e && npm install && npx playwright install chromium   # first time only
+  npm test
+  ```
+
+## Production notes
+
+- The API validates required env vars on startup (`MONGO_URI`, `JWT_SECRET`, and
+  `CLIENT_URL` when `NODE_ENV=production`) and **fails fast** with a clear message
+  rather than starting mis-configured. Set `NODE_ENV=production` on your host so
+  error responses don't leak internal details and CORS is locked to `CLIENT_URL`.
+- Security middleware: `helmet` headers and rate limiting (tight on auth
+  endpoints, looser elsewhere) are enabled by default.
+- Use `GET /health` for uptime monitors / keep-alive pings (returns `503` if the
+  database is disconnected).
+- See `DEPLOYMENT_PLAN.txt` (free hosting: Render + Vercel + Atlas) and
+  `V0_CHECKLIST.txt` (pre-deploy hardening checklist) for deployment.

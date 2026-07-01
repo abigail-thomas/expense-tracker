@@ -1,5 +1,6 @@
 import CreditCard from "../models/CreditCard.js";
 import Fund from "../models/Fund.js";
+import { serverError } from "../middleware/errorMiddleware.js";
 
 // Sentinel returned when a due-day value is present but out of range.
 const INVALID_DUE_DAY = Symbol("invalid-due-day");
@@ -22,7 +23,7 @@ export const getCreditCards = async (req, res) => {
     });
     res.status(200).json(cards);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching credit cards", error: err.message });
+    serverError(res, err, "Error fetching credit cards");
   }
 };
 
@@ -58,7 +59,7 @@ export const addCreditCard = async (req, res) => {
     });
     res.status(201).json(card);
   } catch (err) {
-    res.status(500).json({ message: "Error creating credit card", error: err.message });
+    serverError(res, err, "Error creating credit card");
   }
 };
 
@@ -109,7 +110,7 @@ export const updateCreditCard = async (req, res) => {
     await card.save();
     res.status(200).json(card);
   } catch (err) {
-    res.status(500).json({ message: "Error updating credit card", error: err.message });
+    serverError(res, err, "Error updating credit card");
   }
 };
 
@@ -127,7 +128,7 @@ export const deleteCreditCard = async (req, res) => {
     await card.deleteOne();
     res.status(200).json({ message: "Credit card deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Error deleting credit card", error: err.message });
+    serverError(res, err, "Error deleting credit card");
   }
 };
 
@@ -162,6 +163,6 @@ export const payCreditCard = async (req, res) => {
 
     res.status(200).json({ card, fund });
   } catch (err) {
-    res.status(500).json({ message: "Error making payment", error: err.message });
+    serverError(res, err, "Error making payment");
   }
 };

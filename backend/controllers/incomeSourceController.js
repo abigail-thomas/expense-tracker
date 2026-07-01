@@ -1,4 +1,5 @@
 import IncomeSource from "../models/IncomeSource.js";
+import { serverError } from "../middleware/errorMiddleware.js";
 
 // @desc   List the logged-in user's income sources
 // @route  GET /api/v1/income-source/get
@@ -9,7 +10,7 @@ export const getIncomeSources = async (req, res) => {
     });
     res.status(200).json(sources);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching income sources", error: err.message });
+    serverError(res, err, "Error fetching income sources");
   }
 };
 
@@ -37,7 +38,7 @@ export const addIncomeSource = async (req, res) => {
     });
     res.status(201).json(source);
   } catch (err) {
-    res.status(500).json({ message: "Error creating income source", error: err.message });
+    serverError(res, err, "Error creating income source");
   }
 };
 
@@ -74,7 +75,7 @@ export const updateIncomeSource = async (req, res) => {
     await source.save();
     res.status(200).json(source);
   } catch (err) {
-    res.status(500).json({ message: "Error updating income source", error: err.message });
+    serverError(res, err, "Error updating income source");
   }
 };
 
@@ -92,6 +93,6 @@ export const deleteIncomeSource = async (req, res) => {
     await source.deleteOne();
     res.status(200).json({ message: "Income source deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Error deleting income source", error: err.message });
+    serverError(res, err, "Error deleting income source");
   }
 };

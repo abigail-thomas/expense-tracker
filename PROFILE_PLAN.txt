@@ -91,6 +91,28 @@ already exists (src/components/Inputs/ProfilePhotoSelector.jsx).
   d. FINANCIAL SETTINGS
        - e.g. fiscal month start day, default fund interest rate. Relevant
          because the schedulers already reason about month boundaries.
+  e. MONOGRAM / AVATAR CUSTOMIZATION
+       - The monogram is the initials-based avatar shown when the user has NO
+         profile photo. Today it is rendered in SideMenu.jsx (bg-primary circle
+         with getInitials(user.fullName)) — always the theme purple, always
+         uppercase, fixed size.
+       - Let the user customize it:
+           * COLOR       — pick from a fixed, curated palette (NOT a free color
+                           picker) so it always stays legible against white text.
+                           Store the chosen value (e.g. a hex or a named key).
+           * CASE        — uppercase or lowercase initials (toggle).
+           * TEXT SIZE   — small / medium / large (a fixed set, not free input).
+       - Backend: add preference fields to the User model, e.g.
+           monogramColor (String), monogramCase ("upper" | "lower"),
+           monogramTextSize ("sm" | "md" | "lg"), each with sensible defaults.
+         These ride along on the existing PUT /api/v1/auth/profile endpoint.
+       - Frontend: getInitials() (utils/helper.js) already produces the letters
+         and uppercases them — respect the case preference there (or apply case
+         at render). Apply color + text-size classes wherever the monogram
+         renders (SideMenu.jsx, and anywhere else the avatar appears).
+       - Show a LIVE PREVIEW on the Profile page as the user changes options.
+       - Only affects users without a photo; a live preview should make that
+         relationship clear.
 
 ================================================================================
 4. TIER 4 — EXTRAS

@@ -53,8 +53,12 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
   };
 
   useEffect(() => {
+    // Fetch-on-mount/refresh: setState runs only after the awaited requests
+    // resolve, so this is not the synchronous cascade the rule guards against.
+    /* eslint-disable react-hooks/set-state-in-effect */
     loadCards();
     loadFunds();
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [reloadSignal]);
 
   const openAdd = () =>

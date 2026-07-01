@@ -39,6 +39,9 @@ const Home = () => {
   };
 
   useEffect(() => {
+    // Fetch-on-mount: setState runs only after the awaited request resolves,
+    // so this is not the synchronous cascade the rule guards against.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchDashboardData();
   }, []);
 

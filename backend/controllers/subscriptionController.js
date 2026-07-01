@@ -1,5 +1,6 @@
 import Subscription from "../models/Subscription.js";
 import { chargeSubscriptionOnce } from "../services/subscriptionService.js";
+import { serverError } from "../middleware/errorMiddleware.js";
 
 const VALID_FREQUENCIES = ["weekly", "biweekly", "monthly", "quarterly", "annually"];
 
@@ -26,7 +27,7 @@ export const getSubscriptions = async (req, res) => {
       .sort({ createdAt: -1 });
     res.status(200).json(subscriptions);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching subscriptions", error: err.message });
+    serverError(res, err, "Error fetching subscriptions");
   }
 };
 
@@ -61,7 +62,7 @@ export const addSubscription = async (req, res) => {
 
     res.status(201).json(subscription);
   } catch (err) {
-    res.status(500).json({ message: "Error creating subscription", error: err.message });
+    serverError(res, err, "Error creating subscription");
   }
 };
 
@@ -110,7 +111,7 @@ export const updateSubscription = async (req, res) => {
     await sub.save();
     res.status(200).json(sub);
   } catch (err) {
-    res.status(500).json({ message: "Error updating subscription", error: err.message });
+    serverError(res, err, "Error updating subscription");
   }
 };
 
@@ -123,7 +124,7 @@ export const deleteSubscription = async (req, res) => {
     await sub.deleteOne();
     res.status(200).json({ message: "Subscription deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Error deleting subscription", error: err.message });
+    serverError(res, err, "Error deleting subscription");
   }
 };
 
@@ -137,6 +138,6 @@ export const chargeNowSubscription = async (req, res) => {
     const expense = await chargeSubscriptionOnce(sub, new Date());
     res.status(200).json({ subscription: sub, expense });
   } catch (err) {
-    res.status(500).json({ message: "Error charging subscription", error: err.message });
+    serverError(res, err, "Error charging subscription");
   }
 };

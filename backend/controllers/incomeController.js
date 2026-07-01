@@ -1,6 +1,7 @@
 import ExcelJS from "exceljs";
 import Income from "../models/Income.js";
 import Fund from "../models/Fund.js";
+import { serverError } from "../middleware/errorMiddleware.js";
 
 // @desc   Add a new income entry
 // @route  POST /api/v1/income/add
@@ -31,7 +32,7 @@ export const addIncome = async (req, res) => {
 
     res.status(200).json(income);
   } catch (err) {
-    res.status(500).json({ message: "Error adding income", error: err.message });
+    serverError(res, err, "Error adding income");
   }
 };
 
@@ -75,7 +76,7 @@ export const updateIncome = async (req, res) => {
 
     res.status(200).json(existing);
   } catch (err) {
-    res.status(500).json({ message: "Error updating income", error: err.message });
+    serverError(res, err, "Error updating income");
   }
 };
 
@@ -90,7 +91,7 @@ export const getAllIncome = async (req, res) => {
       .sort({ date: -1 });
     res.status(200).json(income);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching income", error: err.message });
+    serverError(res, err, "Error fetching income");
   }
 };
 
@@ -114,7 +115,7 @@ export const deleteIncome = async (req, res) => {
 
     res.status(200).json({ message: "Income deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Error deleting income", error: err.message });
+    serverError(res, err, "Error deleting income");
   }
 };
 
@@ -155,6 +156,6 @@ export const downloadIncomeExcel = async (req, res) => {
     await workbook.xlsx.write(res);
     res.end();
   } catch (err) {
-    res.status(500).json({ message: "Error downloading income", error: err.message });
+    serverError(res, err, "Error downloading income");
   }
 };

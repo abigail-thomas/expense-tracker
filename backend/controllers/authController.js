@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { serverError } from "../middleware/errorMiddleware.js";
 
 // Generate a signed JWT for a user id (valid for 7 days)
 const generateToken = (id) => {
@@ -13,6 +14,11 @@ export const registerUser = async (req, res) => {
 
   if (!fullName || !email || !password) {
     return res.status(400).json({ message: "All fields are required" });
+  }
+  if (password.length < 8) {
+    return res
+      .status(400)
+      .json({ message: "Password must be at least 8 characters" });
   }
 
   try {
@@ -39,7 +45,7 @@ export const registerUser = async (req, res) => {
       token: generateToken(user._id),
     });
   } catch (err) {
-    res.status(500).json({ message: "Error registering user", error: err.message });
+    serverError(res, err, "Error registering user");
   }
 };
 
@@ -69,7 +75,7 @@ export const loginUser = async (req, res) => {
       token: generateToken(user._id),
     });
   } catch (err) {
-    res.status(500).json({ message: "Error logging in", error: err.message });
+    serverError(res, err, "Error logging in");
   }
 };
 
@@ -83,7 +89,7 @@ export const getUserInfo = async (req, res) => {
     }
     res.status(200).json(user);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching user", error: err.message });
+    serverError(res, err, "Error fetching user");
   }
 };
 
@@ -116,7 +122,7 @@ export const updateUserProfile = async (req, res) => {
     const updated = await User.findById(user._id).select("-password");
     res.status(200).json(updated);
   } catch (err) {
-    res.status(500).json({ message: "Error updating profile", error: err.message });
+    serverError(res, err, "Error updating profile");
   }
 };
 
@@ -154,6 +160,6 @@ export const changePassword = async (req, res) => {
 
     res.status(200).json({ message: "Password updated successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Error changing password", error: err.message });
+    serverError(res, err, "Error changing password");
   }
 };

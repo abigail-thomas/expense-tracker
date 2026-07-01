@@ -1,0 +1,99 @@
+================================================================================
+EXPENSE TRACKER — V0 PRE-DEPLOY CHECKLIST (code hardening + testing)
+================================================================================
+Companion to DEPLOYMENT_PLAN.txt (which covers HOSTING: Render + Vercel + Atlas).
+This file covers CODE readiness: security, robustness, and tests that should be
+in place BEFORE the first public deploy.
+Created: 2026-07-01. Mark [x] as items ship. Target host: Render + Vercel + Atlas.
+
+Legend: [ ] todo   [~] in progress   [x] done   (defer) => v1, intentionally skipped
+
+--------------------------------------------------------------------------------
+A. SECURITY BLOCKERS (must fix before v0)
+--------------------------------------------------------------------------------
+[x] A1. CORS lockdown — removed "*" fallback (server.js). Uses CLIENT_URL, else
+        localhost:5173 in dev; CLIENT_URL REQUIRED in prod (enforced by A2).
+[x] A2. Startup env validation — config/env.js validateEnv(): requires MONGO_URI
+        & JWT_SECRET always, CLIENT_URL in production; exits with clear message.
+        Wired into server.js before app setup.
+[x] A3. Rate limiting — middleware/rateLimiters.js. authLimiter (10/15min) on
+        /auth/login & /auth/register; apiLimiter (300/15min) on all of /api/v1.
+[x] A4. Image upload route now behind `protect` (authRoutes.js). Filename
+        sanitized in uploadMiddleware.js (timestamp+random, validated extension).
+[x] A5. helmet — app.use(helmet()) in server.js.
+[x] A6. err.message leak fixed — serverError() helper in errorMiddleware.js;
+        all 38 500-responses across 9 controllers now log internally and only
+        include error detail outside production.
+[x] A7. Password strength on register — registerUser enforces >=8 chars
+        (matches changePassword).
+
+--------------------------------------------------------------------------------
+B. ROBUSTNESS BLOCKERS (must fix before v0)
+--------------------------------------------------------------------------------
+[x] B1. Global error-handling middleware — errorHandler in errorMiddleware.js,
+        registered last in server.js (after notFound).
+[x] B2. Frontend error boundary — components/ErrorBoundary.jsx wraps the app in
+        App.jsx; render errors show a recovery screen instead of white screen.
+[x] B3. Pinned Node — "engines": { "node": ">=20.19.0" } in both package.json
+        (Vite 7 requires >=20.19).
+[x] B4. Frontend 404 — pages/NotFound.jsx + catch-all <Route path="*"> in App.jsx.
+[x] B5. Structured health endpoint — GET /health (status + db readyState +
+        uptime) in server.js; returns 503 if DB disconnected.
+
+VERIFICATION: all backend files pass `node --check`; new modules import-resolve;
+frontend `npm run build` succeeds; ErrorBoundary/NotFound/App lint-clean.
+NOTE: no live boot smoke test — the subscription scheduler fires on boot and
+would post real charges against Atlas. Functional verification comes via C1
+(isolated in-memory DB).
+PRE-EXISTING LINT (not from this work, would fail a CI lint gate — fix under C3):
+  set-state-in-effect errors in Home.jsx and CreditCard/CreditCardsOverview.jsx.
+
+--------------------------------------------------------------------------------
+C. TESTING (must have a baseline before v0)
+--------------------------------------------------------------------------------
+[x] C1. Backend API tests — Vitest + Supertest + mongodb-memory-server (26 tests,
+        all passing). Files: backend/tests/{auth,income,expense,dashboard,app}.test.js
+        + setup.js + helpers.js; vitest.config.js; `npm test` in backend.
+        Required a refactor: server.js split into app.js (pure app, no side
+        effects — importable by tests) + server.js (boot: validateEnv, connectDB,
+        schedulers, listen). Rate limiters skip when NODE_ENV=test.
+        Also: frontend helper unit tests (9 tests) incl. the money-rounding
+        contract (addThousandsSeparator) — frontend/.../utils/helper.test.js,
+        vitest.config.js, `npm test` in frontend.
+[x] C2. E2E — Playwright in /e2e (own package). playwright.config.js boots the
+        full stack on isolated ports (backend 8001 via test-server.js + in-memory
+        Mongo, no schedulers; frontend dev on 5174) with CORS wired. 5 journeys
+        in journey.spec.js ALL PASSING: signup->dashboard, logout/login, add
+        income+expense & dashboard totals (Balance 3,500.00 / Due 1,500.00),
+        404 page, protected-route redirect. Run: `cd e2e && npm test`.
+        Note: add-income/expense require a pre-existing fund + income source
+        (signup seeds none), so the flow test creates a fund first. Consider
+        seeding a default fund for new users (v1 UX nicety).
+[x] C3. CI — .github/workflows/ci.yml: backend tests + frontend lint/unit/build
+        on every push; e2e (Playwright) on PRs, uploads report artifact.
+        Fixed the 2 pre-existing set-state-in-effect lint errors (scoped disable
+        w/ justification — Home.jsx, CreditCardsOverview.jsx). `npm run lint` clean.
+
+--------------------------------------------------------------------------------
+D. CONFIG / DEPLOY (mostly covered by DEPLOYMENT_PLAN.txt — verify)
+--------------------------------------------------------------------------------
+[ ] D1. Rotate secrets — generate a NEW JWT_SECRET for prod; set MONGO_URI,
+        JWT_SECRET, CLIENT_URL in Render dashboard (not committed). (Plan §3)
+[ ] D2. Mongo connect crashes on failure (process.exit 1) — ACCEPTABLE because
+        Render restarts the process. No retry logic needed for v0. (verify host)
+
+--------------------------------------------------------------------------------
+E. DEFERRED TO v1 (intentionally NOT doing for v0)
+--------------------------------------------------------------------------------
+(defer) Real logger (pino/winston) + request logging — console OK at v0 scale.
+(defer) Input-validation library (zod/joi) — ad-hoc controller checks hold.
+(defer) Move in-process schedulers to a job runner — only matters at >1 instance.
+(defer) Externalize uploads to Cloudinary/S3 — see DEPLOYMENT_PLAN §2(iii);
+        for v0, profile images are cosmetic and may vanish on restart.
+(defer) Explicit request body-size limits (express.json default 100kb holds).
+(defer) localStorage token -> httpOnly cookie.
+(defer) Multi-origin CORS for preview deploys — share one prod URL for v0.
+
+================================================================================
+END
+================================================================================

@@ -1,4 +1,5 @@
 import Goal from "../models/Goal.js";
+import { serverError } from "../middleware/errorMiddleware.js";
 
 // Validate & parse a date field. Returns { ok, value } — value is a Date.
 const parseDate = (raw) => {
@@ -14,7 +15,7 @@ export const getGoals = async (req, res) => {
     const goals = await Goal.find({ userId: req.user.id }).sort({ createdAt: -1 });
     res.status(200).json(goals);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching goals", error: err.message });
+    serverError(res, err, "Error fetching goals");
   }
 };
 
@@ -60,7 +61,7 @@ export const addGoal = async (req, res) => {
     });
     res.status(201).json(goal);
   } catch (err) {
-    res.status(500).json({ message: "Error creating goal", error: err.message });
+    serverError(res, err, "Error creating goal");
   }
 };
 
@@ -113,7 +114,7 @@ export const updateGoal = async (req, res) => {
     await goal.save();
     res.status(200).json(goal);
   } catch (err) {
-    res.status(500).json({ message: "Error updating goal", error: err.message });
+    serverError(res, err, "Error updating goal");
   }
 };
 
@@ -128,6 +129,6 @@ export const deleteGoal = async (req, res) => {
     await goal.deleteOne();
     res.status(200).json({ message: "Goal deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Error deleting goal", error: err.message });
+    serverError(res, err, "Error deleting goal");
   }
 };

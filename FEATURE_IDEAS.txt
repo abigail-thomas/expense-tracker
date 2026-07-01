@@ -45,6 +45,22 @@ CANDIDATE FEATURES
 - Dark mode
 - 2FA on login
 
+[ UI / design concepts ]
+- Redesigned "Overview" home screen inspired by the Copilot/Mint-style mobile
+  dashboard (see reference image). Build BOTH a mobile and a laptop/desktop
+  layout of the same concept. Key elements from the reference:
+    * Toggle at top between "Net worth" and "Spending" views
+    * Large hero number for the selected metric (e.g. total spending) with a
+      "$456 more/less than last month" delta line and up/down arrow
+    * A trend line chart over the period with a "Today" marker and date axis
+    * Account summary cards below (Cash, Credit Cards, etc.) showing balances,
+      with negative balances shown in the card (e.g. Credit Cards -$1,456)
+    * Bottom nav (mobile): Overview / This month / Marketplace / Live expert /
+      Notifications — adapt tabs to our features (Overview / This month /
+      Insights / Goals / Notifications)
+    * Green/teal gradient background, clean rounded white cards
+  Ties into existing Net worth timeline + income-vs-expense insight ideas.
+
 DECIDED / PRIORITIZED
 ---------------------
 (nothing yet)

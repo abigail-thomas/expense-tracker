@@ -3,6 +3,7 @@ import Expense from "../models/Expense.js";
 import Fund from "../models/Fund.js";
 import CreditCard from "../models/CreditCard.js";
 import { createExpenseWithEffects } from "../services/expenseService.js";
+import { serverError } from "../middleware/errorMiddleware.js";
 
 // @desc   Add a new expense entry
 // @route  POST /api/v1/expense/add
@@ -30,7 +31,7 @@ export const addExpense = async (req, res) => {
 
     res.status(200).json(expense);
   } catch (err) {
-    res.status(500).json({ message: "Error adding expense", error: err.message });
+    serverError(res, err, "Error adding expense");
   }
 };
 
@@ -97,7 +98,7 @@ export const updateExpense = async (req, res) => {
 
     res.status(200).json(existing);
   } catch (err) {
-    res.status(500).json({ message: "Error updating expense", error: err.message });
+    serverError(res, err, "Error updating expense");
   }
 };
 
@@ -114,7 +115,7 @@ export const getAllExpense = async (req, res) => {
       .sort({ date: -1 });
     res.status(200).json(expense);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching expense", error: err.message });
+    serverError(res, err, "Error fetching expense");
   }
 };
 
@@ -143,7 +144,7 @@ export const deleteExpense = async (req, res) => {
 
     res.status(200).json({ message: "Expense deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Error deleting expense", error: err.message });
+    serverError(res, err, "Error deleting expense");
   }
 };
 
@@ -189,6 +190,6 @@ export const downloadExpenseExcel = async (req, res) => {
     await workbook.xlsx.write(res);
     res.end();
   } catch (err) {
-    res.status(500).json({ message: "Error downloading expense", error: err.message });
+    serverError(res, err, "Error downloading expense");
   }
 };

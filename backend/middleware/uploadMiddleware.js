@@ -11,9 +11,13 @@ const storage = multer.diskStorage({
     cb(null, path.join(__dirname, "..", "uploads"));
   },
   filename: (req, file, cb) => {
-    // Prefix with time to avoid collisions; keep original extension
-    const uniqueName = `${Date.now()}-${file.originalname}`;
-    cb(null, uniqueName);
+    // Never trust the client-supplied filename (path traversal / odd chars).
+    // Derive a safe name from a timestamp + random suffix, keeping only a
+    // sanitized extension.
+    const rawExt = path.extname(file.originalname).toLowerCase();
+    const ext = /^\.[a-z0-9]+$/.test(rawExt) ? rawExt : "";
+    const suffix = Math.round(Math.random() * 1e9);
+    cb(null, `${Date.now()}-${suffix}${ext}`);
   },
 });
 

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Income from "../models/Income.js";
 import Expense from "../models/Expense.js";
 import Fund from "../models/Fund.js";
+import { serverError } from "../middleware/errorMiddleware.js";
 
 // @desc   Aggregated dashboard data for the logged-in user
 // @route  GET /api/v1/dashboard
@@ -49,6 +50,6 @@ export const getDashboardData = async (req, res) => {
       recentTransactions,
     });
   } catch (err) {
-    res.status(500).json({ message: "Error fetching dashboard data", error: err.message });
+    serverError(res, err, "Error fetching dashboard data");
   }
 };

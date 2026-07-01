@@ -17,8 +17,8 @@ router.get("/getUser", protect, getUserInfo);
 router.put("/profile", protect, updateUserProfile);
 router.put("/change-password", protect, changePassword);
 
-// Upload a profile image and return its public URL
-router.post("/upload-image", upload.single("image"), (req, res) => {
+// Upload a profile image and return its public URL (authenticated only)
+router.post("/upload-image", protect, upload.single("image"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" });
   }

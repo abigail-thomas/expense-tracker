@@ -3,6 +3,7 @@ import {
   describeInterest,
   describeInterestDetail,
 } from "../services/interestService.js";
+import { serverError } from "../middleware/errorMiddleware.js";
 
 // Attach display-only interest text to a fund, derived from the single source
 // of truth in interestService so the UI can't drift: `interestLabel` is the
@@ -47,7 +48,7 @@ export const getFunds = async (req, res) => {
 
     res.status(200).json(funds.map(withInterest));
   } catch (err) {
-    res.status(500).json({ message: "Error fetching funds", error: err.message });
+    serverError(res, err, "Error fetching funds");
   }
 };
 
@@ -83,7 +84,7 @@ export const addFund = async (req, res) => {
     });
     res.status(201).json(fund);
   } catch (err) {
-    res.status(500).json({ message: "Error creating fund", error: err.message });
+    serverError(res, err, "Error creating fund");
   }
 };
 
@@ -137,7 +138,7 @@ export const updateFund = async (req, res) => {
     await fund.save();
     res.status(200).json(fund);
   } catch (err) {
-    res.status(500).json({ message: "Error updating fund", error: err.message });
+    serverError(res, err, "Error updating fund");
   }
 };
 
@@ -152,6 +153,6 @@ export const deleteFund = async (req, res) => {
     await fund.deleteOne();
     res.status(200).json({ message: "Fund deleted successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Error deleting fund", error: err.message });
+    serverError(res, err, "Error deleting fund");
   }
 };
