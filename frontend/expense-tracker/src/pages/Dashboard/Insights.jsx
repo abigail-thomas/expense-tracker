@@ -2,6 +2,7 @@ import React from "react";
 
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import IncomeVsExpenseCard from "../../components/Insights/IncomeVsExpenseCard";
+import CategoryBreakdownCard from "../../components/Insights/CategoryBreakdownCard";
 
 import { useUserAuth } from "../../hooks/useUserAuth";
 
@@ -19,6 +20,7 @@ const Insights = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <IncomeVsExpenseCard />
+          <CategoryBreakdownCard />
         </div>
       </div>
     </DashboardLayout>

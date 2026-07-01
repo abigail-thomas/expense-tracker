@@ -1,4 +1,30 @@
 import Fund from "../models/Fund.js";
+import {
+  describeInterest,
+  describeInterestDetail,
+} from "../services/interestService.js";
+
+// Attach display-only interest text to a fund, derived from the single source
+// of truth in interestService so the UI can't drift: `interestLabel` is the
+// short badge ("3.65% APY"); `interestDetail` is the verbose tooltip breakdown.
+const withInterest = (fund) => {
+  const obj = fund.toObject ? fund.toObject() : fund;
+  return {
+    ...obj,
+    interestLabel: describeInterest(obj),
+    interestDetail: describeInterestDetail(obj),
+  };
+};
+
+// Parse a maturity date from the request body. Returns:
+//   { ok: true, value: Date|null }  — null means "cleared / open-ended"
+//   { ok: false }                   — a non-empty value that isn't a valid date
+const parseMaturityDate = (raw) => {
+  if (raw === "" || raw === null) return { ok: true, value: null };
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return { ok: false };
+  return { ok: true, value: d };
+};
 
 // Funds seeded for a user the first time they load their funds.
 const DEFAULT_FUNDS = [
@@ -19,7 +45,7 @@ export const getFunds = async (req, res) => {
       );
     }
 
-    res.status(200).json(funds);
+    res.status(200).json(funds.map(withInterest));
   } catch (err) {
     res.status(500).json({ message: "Error fetching funds", error: err.message });
   }
@@ -29,9 +55,16 @@ export const getFunds = async (req, res) => {
 // @route  POST /api/v1/fund/add
 export const addFund = async (req, res) => {
   try {
-    const { name, category, icon, balance } = req.body;
+    const { name, category, icon, balance, apy, maturityDate } = req.body;
     if (!name || !name.trim()) {
       return res.status(400).json({ message: "Name is required" });
+    }
+    if (apy !== undefined && apy !== "" && (isNaN(apy) || Number(apy) < 0)) {
+      return res.status(400).json({ message: "APY must be a non-negative number" });
+    }
+    const maturity = parseMaturityDate(maturityDate ?? "");
+    if (!maturity.ok) {
+      return res.status(400).json({ message: "Maturity date is invalid" });
     }
 
     const exists = await Fund.findOne({ userId: req.user.id, name: name.trim() });
@@ -45,6 +78,8 @@ export const addFund = async (req, res) => {
       category: (category || "").trim(),
       icon: icon || "",
       balance: Number(balance) || 0,
+      apy: Number(apy) || 0,
+      maturityDate: maturity.value,
     });
     res.status(201).json(fund);
   } catch (err) {
@@ -56,7 +91,7 @@ export const addFund = async (req, res) => {
 // @route  PUT /api/v1/fund/:id
 export const updateFund = async (req, res) => {
   try {
-    const { name, category, icon, balance } = req.body;
+    const { name, category, icon, balance, apy, maturityDate } = req.body;
     const fund = await Fund.findOne({ _id: req.params.id, userId: req.user.id });
     if (!fund) {
       return res.status(404).json({ message: "Fund not found" });
@@ -84,6 +119,19 @@ export const updateFund = async (req, res) => {
         return res.status(400).json({ message: "Balance must be a number" });
       }
       fund.balance = Number(balance);
+    }
+    if (apy !== undefined) {
+      if (apy !== "" && (isNaN(apy) || Number(apy) < 0)) {
+        return res.status(400).json({ message: "APY must be a non-negative number" });
+      }
+      fund.apy = apy === "" ? 0 : Number(apy);
+    }
+    if (maturityDate !== undefined) {
+      const maturity = parseMaturityDate(maturityDate);
+      if (!maturity.ok) {
+        return res.status(400).json({ message: "Maturity date is invalid" });
+      }
+      fund.maturityDate = maturity.value;
     }
 
     await fund.save();

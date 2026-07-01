@@ -220,6 +220,81 @@ export const filterByAccount = (list = [], account = "all", kind = "expense") =>
   return list;
 };
 
+// Start (inclusive) and end (exclusive) of the calendar month containing `ref`,
+// as UTC dates. Matches the UTC bucketing used elsewhere so entered calendar
+// days don't slip across month boundaries in local time.
+export const monthBounds = (ref = new Date()) => ({
+  start: new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), 1)),
+  end: new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth() + 1, 1)),
+});
+
+// Start (inclusive) and end (exclusive) of the calendar year containing `ref`.
+export const yearBounds = (ref = new Date()) => ({
+  start: new Date(Date.UTC(ref.getUTCFullYear(), 0, 1)),
+  end: new Date(Date.UTC(ref.getUTCFullYear() + 1, 0, 1)),
+});
+
+// Group expenses whose `date` falls in [start, end) by their icon into spending
+// categories, using each icon's preset label (same normalization as
+// prepareExpenseBarChartData). Both debit and credit expenses count as spend.
+// Returns { total, categories: [{ icon, category, amount, count, share }] }
+// sorted by amount desc, where `share` is the fraction of `total` (0–1).
+export const prepareCategoryBreakdown = (expenseList = [], { start, end } = {}) => {
+  const startMs = start ? new Date(start).getTime() : -Infinity;
+  const endMs = end ? new Date(end).getTime() : Infinity;
+
+  const byIcon = new Map();
+  let total = 0;
+  expenseList.forEach((item) => {
+    const t = new Date(item?.date).getTime();
+    if (isNaN(t) || t < startMs || t >= endMs) return;
+    const amount = Number(item?.amount) || 0;
+    const iconKey = item?.icon || "other";
+    const existing = byIcon.get(iconKey);
+    if (existing) {
+      existing.amount += amount;
+      existing.count += 1;
+    } else {
+      byIcon.set(iconKey, {
+        icon: iconKey,
+        category: getIconOption(iconKey)?.label || "Other",
+        amount,
+        count: 1,
+      });
+    }
+    total += amount;
+  });
+
+  const categories = Array.from(byIcon.values())
+    .map((c) => ({ ...c, share: total > 0 ? c.amount / total : 0 }))
+    .sort((a, b) => b.amount - a.amount);
+
+  return { total, categories };
+};
+
+// Combined per-category table comparing this month against this year-to-date.
+// Rows carry { icon, category, month, year, monthlyAvg, yearShare } sorted by
+// year-to-date amount desc. `monthlyAvg` spreads the year's spend across the
+// elapsed months of the current year (Jan = 1). Every icon seen this month also
+// appears within the year, so iterating the year's categories covers them all.
+export const prepareCategoryTable = (expenseList = [], ref = new Date()) => {
+  const month = prepareCategoryBreakdown(expenseList, monthBounds(ref));
+  const year = prepareCategoryBreakdown(expenseList, yearBounds(ref));
+  const elapsedMonths = ref.getUTCMonth() + 1;
+  const monthByIcon = new Map(month.categories.map((c) => [c.icon, c.amount]));
+
+  const rows = year.categories.map((c) => ({
+    icon: c.icon,
+    category: c.category,
+    month: monthByIcon.get(c.icon) || 0,
+    year: c.amount,
+    monthlyAvg: c.amount / elapsedMonths,
+    yearShare: c.share,
+  }));
+
+  return { rows, monthTotal: month.total, yearTotal: year.total, elapsedMonths };
+};
+
 // Income sources received in 2+ distinct months, with stats, sorted by total.
 export const detectRecurringIncome = (incomeList = []) => {
   const bySource = new Map();

@@ -16,6 +16,7 @@ import Expense from "./pages/Dashboard/Expense";
 import Subscriptions from "./pages/Dashboard/Subscriptions";
 import Insights from "./pages/Dashboard/Insights";
 import IncomeVsExpense from "./pages/Dashboard/IncomeVsExpense";
+import CategoryBreakdown from "./pages/Dashboard/CategoryBreakdown";
 
 import UserProvider from "./context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -40,6 +41,10 @@ const App = () => {
               <Route
                 path="/insights/income-vs-expense"
                 element={<IncomeVsExpense />}
+              />
+              <Route
+                path="/insights/category-breakdown"
+                element={<CategoryBreakdown />}
               />
             </Route>
           </Routes>
