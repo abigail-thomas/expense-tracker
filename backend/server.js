@@ -60,7 +60,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Simple health check
 app.get("/", (req, res) => {
-  res.send("Expense Tracker API is running");
+  res.send("Personal Finance Manager API is running");
 });
 
 const PORT = process.env.PORT || 8000;

@@ -1,10 +1,14 @@
 import React, { useRef, useState } from "react";
 import { LuUser, LuUpload, LuTrash } from "react-icons/lu";
 
-// Lets the user pick / preview / remove a profile photo before sign-up.
-const ProfilePhotoSelector = ({ image, setImage }) => {
+// Lets the user pick / preview / remove a profile photo.
+// `initialPreview` shows an already-saved photo URL when no new file is picked.
+const ProfilePhotoSelector = ({ setImage, initialPreview = null }) => {
   const inputRef = useRef(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+
+  // Show the freshly picked file if there is one, else the existing saved photo.
+  const displayUrl = previewUrl || initialPreview;
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -34,7 +38,7 @@ const ProfilePhotoSelector = ({ image, setImage }) => {
         className="hidden"
       />
 
-      {!image ? (
+      {!displayUrl ? (
         <div className="w-20 h-20 flex items-center justify-center bg-purple-100 rounded-full relative">
           <LuUser className="text-4xl text-primary" />
           <button
@@ -48,9 +52,11 @@ const ProfilePhotoSelector = ({ image, setImage }) => {
       ) : (
         <div className="relative">
           <img
-            src={previewUrl}
+            src={displayUrl}
             alt="profile preview"
-            className="w-20 h-20 rounded-full object-cover"
+            onClick={onChooseFile}
+            title="Click to change photo"
+            className="w-20 h-20 rounded-full object-cover cursor-pointer"
           />
           <button
             type="button"

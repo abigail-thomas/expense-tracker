@@ -18,6 +18,7 @@ import Insights from "./pages/Dashboard/Insights";
 import IncomeVsExpense from "./pages/Dashboard/IncomeVsExpense";
 import CategoryBreakdown from "./pages/Dashboard/CategoryBreakdown";
 import Goals from "./pages/Dashboard/Goals";
+import Profile from "./pages/Dashboard/Profile";
 
 import UserProvider from "./context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -48,6 +49,7 @@ const App = () => {
                 element={<CategoryBreakdown />}
               />
               <Route path="/goals" element={<Goals />} />
+              <Route path="/profile" element={<Profile />} />
             </Route>
           </Routes>
         </Router>

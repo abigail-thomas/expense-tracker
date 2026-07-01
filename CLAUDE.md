@@ -1,6 +1,6 @@
-# Expense Tracker
+# Personal Finance Manager
 
-MERN expense tracker. Two parts that must **both** be running in dev:
+MERN personal finance manager. Two parts that must **both** be running in dev:
 
 - `backend/` — Express + MongoDB (Atlas) API on **port 8000**
 - `frontend/expense-tracker/` — React + Vite dev server on **port 5173**

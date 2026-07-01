@@ -1,0 +1,54 @@
+EXPENSE TRACKER — FEATURE IDEAS
+================================
+Running list of features to consider. Append freely; move items to
+DONE as they ship. Last updated: 2026-07-01.
+
+ALREADY BUILT (for reference — don't duplicate)
+-----------------------------------------------
+- Auth: login/register, profile edit, change password, profile photo
+- Dashboard overview
+- Income + Income Sources (CRUD)
+- Expenses (CRUD, Excel export)
+- Funds with interest logic
+- Recurring Subscriptions (frequencies, charge-now)
+- Savings Goals (CRUD)
+- Credit Cards (CRUD, pay)
+- Insights: category breakdown, income vs. expense analysis
+
+CANDIDATE FEATURES
+------------------
+
+[ Budgeting & planning ]
+- Monthly budgets per category, progress bars, over-budget alerts
+- Bill / subscription due-date reminders (upcoming charges this week)
+- "Safe to spend" = income - committed (subs, bills, goal contributions)
+
+[ Insight & reporting ]
+- Month-over-month and year-over-year comparisons
+- Net worth timeline (funds + balances - credit card debt)
+- Cash-flow forecast projecting balances forward from recurring items
+- PDF report export (Excel already exists)
+
+[ Data entry & UX ]
+- Receipt photo attachment on expenses (image upload already exists)
+- Search + filter + tags across income/expenses
+- Bulk import from CSV / bank statement
+- Split a single transaction across multiple categories
+
+[ Money mechanics ]
+- Multi-currency support with conversion
+- Debt payoff planner (snowball / avalanche) tied to credit cards
+- Shared / household accounts (multiple users, one budget)
+
+[ Platform ]
+- Email / push notifications for reminders and budget alerts
+- Dark mode
+- 2FA on login
+
+DECIDED / PRIORITIZED
+---------------------
+(nothing yet)
+
+DONE
+----
+(nothing yet)

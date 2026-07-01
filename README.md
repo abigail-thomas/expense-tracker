@@ -1,8 +1,8 @@
-# Expense Tracker
+# Personal Finance Manager
 
-Full-Stack MERN Expense Tracker — **React, Node.js, Express, MongoDB**.
+Full-Stack MERN Personal Finance Manager — **React, Node.js, Express, MongoDB**.
 
-Track your income and expenses, visualise them with charts, and export the data to Excel.
+Track income, expenses, savings funds, subscriptions, credit cards, and goals; visualise them with charts and insights; and export the data to Excel.
 
 ## Features
 
