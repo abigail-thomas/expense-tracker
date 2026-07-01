@@ -4,6 +4,7 @@ import {
   LuWalletMinimal,
   LuChartColumnBig,
   LuRepeat,
+  LuLandPlot,
   LuLogOut,
 } from "react-icons/lu";
 
@@ -41,6 +42,12 @@ export const SIDE_MENU_DATA = [
   },
   {
     id: "06",
+    label: "Goals",
+    icon: LuLandPlot,
+    path: "/goals",
+  },
+  {
+    id: "07",
     label: "Logout",
     icon: LuLogOut,
     path: "logout",

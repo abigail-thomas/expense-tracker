@@ -1,0 +1,134 @@
+================================================================================
+EXPENSE TRACKER — PROFILE PAGE PLANNING
+================================================================================
+Purpose: Plan a Profile page and decide what account/settings features to add.
+Written: 2026-07-01. Planning only — nothing here is built yet.
+
+--------------------------------------------------------------------------------
+0. CURRENT STATE (what exists today — read before scoping)
+--------------------------------------------------------------------------------
+User model (backend/models/User.js):
+    fullName          (String, required)
+    email             (String, required, UNIQUE)
+    password          (String, required, hashed via pre("save") hook)
+    profileImageUrl   (String, default null)
+    createdAt / updatedAt  (automatic, via timestamps: true)
+
+Auth endpoints that exist (backend/routes/authRoutes.js):
+    POST /api/v1/auth/register
+    POST /api/v1/auth/login
+    GET  /api/v1/auth/getUser        (protected)
+    POST /api/v1/auth/upload-image   (returns a public image URL)
+
+KEY FACT: There is NO "update profile" or "change password" endpoint yet.
+Almost everything below is net-new BACKEND work, not just a frontend page.
+
+Frontend: no Profile/Settings page yet. A ProfilePhotoSelector input component
+already exists (src/components/Inputs/ProfilePhotoSelector.jsx).
+
+================================================================================
+1. TIER 1 — CORE ACCOUNT MANAGEMENT (the essentials)
+================================================================================
+  a. CHANGE DISPLAY NAME (fullName)
+       - Needs: new PUT /api/v1/auth/profile endpoint.
+       - Effort: trivial (just update fullName).
+
+  b. CHANGE PROFILE PHOTO
+       - Upload endpoint already exists; wire a "save" that stores the returned
+         URL onto the user's profileImageUrl.
+       - GOTCHA: on a free deploy the uploaded file is wiped on restart
+         (ephemeral disk — see DEPLOYMENT_PLAN.txt section 2-iii). Fine in local
+         dev; needs external storage (e.g. Cloudinary) to persist in prod.
+
+  c. CHANGE PASSWORD
+       - Needs: endpoint requiring CURRENT password + new + confirm.
+       - GOTCHA: must use user.save() (NOT findByIdAndUpdate). The re-hash
+         pre("save") hook only runs on .save(); using findByIdAndUpdate would
+         store the new password in PLAINTEXT.
+       - Verify current password with user.comparePassword() before changing.
+
+  d. CHANGE EMAIL
+       - Needs: endpoint with a uniqueness check.
+       - GOTCHA: email is `unique` in the schema — check for collision and
+         handle the duplicate-key error gracefully (don't 500).
+       - Ideally verify the new address, but that requires email sending
+         (see Tier 2 forgot-password) — can skip verification for v1.
+
+================================================================================
+2. TIER 2 — ACCOUNT SECURITY & LIFECYCLE
+================================================================================
+  a. VIEW ACCOUNT INFO (read-only)
+       - Email, "member since" (createdAt already available), last updated.
+       - Cheap; good anchor content for the page.
+
+  b. DELETE ACCOUNT (danger zone)  <-- privacy essential
+       - GOTCHA: must CASCADE-DELETE all the user's related data — income,
+         expense, funds, subscriptions, credit cards, income sources — or you
+         orphan documents in Mongo.
+       - Require password re-entry to confirm.
+
+  c. FORGOT / RESET PASSWORD  <-- biggest infrastructure lift
+       - Distinct from "change password" (user is logged OUT here).
+       - Requires EMAIL DELIVERY (e.g. Resend / SendGrid free tier) to send a
+         time-limited reset token/link. Treat as its own mini-project.
+
+  d. LOG OUT EVERYWHERE
+       - Harder than it sounds: JWTs here are stateless (7-day, no server-side
+         session store). True revoke-all needs a token-version field on the
+         user that invalidates old tokens. Probably skip unless wanted.
+
+================================================================================
+3. TIER 3 — APP PREFERENCES (natural fit for an expense tracker)
+================================================================================
+  a. CURRENCY PREFERENCE
+       - Ties into addThousandsSeparator() (frontend/.../utils/helper.js), which
+         currently formats fixed 2-decimals with no currency symbol. A per-user
+         currency would flow through that helper.
+  b. THEME (light / dark)
+  c. NOTIFICATION PREFERENCES
+       - "subscription due soon", "interest credited" — maps onto existing
+         startSubscriptionScheduler / startInterestScheduler.
+  d. FINANCIAL SETTINGS
+       - e.g. fiscal month start day, default fund interest rate. Relevant
+         because the schedulers already reason about month boundaries.
+
+================================================================================
+4. TIER 4 — EXTRAS
+================================================================================
+  a. EXPORT ALL MY DATA
+       - Per-type Excel downloads already exist; add a single "export
+         everything" (JSON / zip) on the Profile page.
+  b. CUSTOM CATEGORIES MANAGEMENT
+       - Let users define their own expense categories.
+
+================================================================================
+5. RECOMMENDED SEQUENCING
+================================================================================
+  1. TIER 1 (name, photo, password, email) — build on ONE new
+     PUT /api/v1/auth/profile endpoint + a dedicated changePassword endpoint.
+     Covers everything originally asked for and is self-contained.
+  2. DELETE ACCOUNT (Tier 2b) — privacy essential; do next.
+  3. Defer FORGOT-PASSWORD (Tier 2c) until ready to add email infrastructure.
+  4. Treat Tier 3 preferences as a separate "Settings" effort.
+
+================================================================================
+6. STRUCTURAL DECISION TO MAKE EARLY
+================================================================================
+One combined "Profile & Settings" page, OR split them:
+   - PROFILE  = identity (name, photo, email, password)
+   - SETTINGS = preferences (currency, theme, notifications, financial settings)
+The SPLIT scales better as Tier 3 grows. Decide before building so routing and
+navigation don't need reworking later.
+
+================================================================================
+7. OPEN NEXT STEP
+================================================================================
+When ready to build Tier 1, define exact endpoint contracts (request/response
+shapes) for:
+   - PUT  /api/v1/auth/profile        (name, email, profileImageUrl)
+   - PUT  /api/v1/auth/change-password (currentPassword, newPassword)
+Then the frontend Profile page + API wiring in src/utils/apiPaths.js.
+
+================================================================================
+END OF PLAN
+================================================================================

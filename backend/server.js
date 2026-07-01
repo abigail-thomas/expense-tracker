@@ -13,6 +13,7 @@ import fundRoutes from "./routes/fundRoutes.js";
 import creditCardRoutes from "./routes/creditCardRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
+import goalRoutes from "./routes/goalRoutes.js";
 import { startInterestScheduler } from "./services/interestService.js";
 import { startSubscriptionScheduler } from "./services/subscriptionService.js";
 
@@ -52,6 +53,7 @@ app.use("/api/v1/fund", fundRoutes);
 app.use("/api/v1/credit-card", creditCardRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/subscription", subscriptionRoutes);
+app.use("/api/v1/goal", goalRoutes);
 
 // Serve uploaded profile images statically
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

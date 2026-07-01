@@ -17,6 +17,7 @@ import Subscriptions from "./pages/Dashboard/Subscriptions";
 import Insights from "./pages/Dashboard/Insights";
 import IncomeVsExpense from "./pages/Dashboard/IncomeVsExpense";
 import CategoryBreakdown from "./pages/Dashboard/CategoryBreakdown";
+import Goals from "./pages/Dashboard/Goals";
 
 import UserProvider from "./context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -46,6 +47,7 @@ const App = () => {
                 path="/insights/category-breakdown"
                 element={<CategoryBreakdown />}
               />
+              <Route path="/goals" element={<Goals />} />
             </Route>
           </Routes>
         </Router>

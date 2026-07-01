@@ -27,6 +27,9 @@ import {
   LuLayoutGrid,
   LuHouse,
   LuCog,
+  LuCar,
+  LuGraduationCap,
+  LuPalette,
 } from "react-icons/lu";
 
 // Preset icons used across the app. `key` is stored on a record's `icon` field
@@ -91,12 +94,25 @@ export const CREDIT_ICON_PALETTE = [
   { key: "other", label: "Other", Icon: LuEllipsis },
 ];
 
+// Category a user can pick from when creating/editing a savings goal.
+export const GOAL_ICON_PALETTE = [
+  { key: "home", label: "Home", Icon: LuHouse },
+  { key: "auto", label: "Auto", Icon: LuCar },
+  { key: "travel", label: "Travel", Icon: LuPlane },
+  { key: "education", label: "Education", Icon: LuGraduationCap },
+  { key: "hobbies", label: "Hobbies", Icon: LuPalette },
+  { key: "gifts", label: "Gifts", Icon: LuGift },
+  { key: "debt", label: "Debt", Icon: LuCreditCard },
+  { key: "other", label: "Other", Icon: LuEllipsis },
+];
+
 const ALL_ICON_OPTIONS = [
   ...EXPENSE_ICON_OPTIONS,
   ...SUBSCRIPTION_ICON_OPTIONS,
   ...INCOME_ICON_PALETTE,
   ...FUND_ICON_PALETTE,
   ...CREDIT_ICON_PALETTE,
+  ...GOAL_ICON_PALETTE,
 ];
 
 // Look up a preset by its stored key (searches expense categories + income palette).

@@ -323,3 +323,81 @@ export const detectRecurringIncome = (incomeList = []) => {
     }))
     .sort((a, b) => b.total - a.total);
 };
+
+// Net savings over [start, end): total income minus total expenses in the
+// window. This is the "money that came in and wasn't spent" figure that a
+// savings goal's progress is built on. Either bound may be omitted (open-ended).
+export const netSavingsBetween = (incomeList = [], expenseList = [], start, end) => {
+  const startMs = start ? new Date(start).getTime() : -Infinity;
+  const endMs = end ? new Date(end).getTime() : Infinity;
+  const sumInWindow = (list) =>
+    list.reduce((acc, item) => {
+      const t = new Date(item?.date).getTime();
+      if (isNaN(t) || t < startMs || t >= endMs) return acc;
+      return acc + (Number(item?.amount) || 0);
+    }, 0);
+  return sumInWindow(incomeList) - sumInWindow(expenseList);
+};
+
+// Compute a savings goal's live progress from the raw income/expense lists.
+//   saved      = startingAmount + net savings since the goal's startDate
+//   remaining  = target - saved (floored at 0)
+//   pct        = saved / target (can exceed 1 when over-saved)
+//   requiredPerMonth = what must still be saved each month to hit target on time
+//   actualPerMonth   = observed pace since startDate
+//   projectedDate    = when the goal is reached at the current pace (or null)
+//   status     = { key, label } for the badge: reached / ontrack / behind / overdue
+export const computeGoalProgress = (
+  goal,
+  incomeList = [],
+  expenseList = [],
+  now = new Date()
+) => {
+  const target = Number(goal?.targetAmount) || 0;
+  const start = new Date(goal?.startDate);
+  const targetDate = new Date(goal?.targetDate);
+  const startingAmount = Number(goal?.startingAmount) || 0;
+
+  const savedSinceStart = netSavingsBetween(incomeList, expenseList, start, now);
+  const saved = startingAmount + savedSinceStart;
+  const remaining = Math.max(0, target - saved);
+  const pct = target > 0 ? saved / target : 0;
+
+  const DAY = 24 * 60 * 60 * 1000;
+  const daysElapsed = Math.max((now - start) / DAY, 0);
+  // Fractional months remaining until the target date (0 if past).
+  const monthsRemaining = Math.max(moment(targetDate).diff(moment(now), "months", true), 0);
+
+  const requiredPerMonth =
+    remaining > 0 && monthsRemaining > 0 ? remaining / monthsRemaining : 0;
+  const actualPerMonth =
+    daysElapsed > 0 ? (savedSinceStart / daysElapsed) * (365.25 / 12) : 0;
+
+  let projectedDate = null;
+  if (saved >= target) {
+    projectedDate = now;
+  } else if (savedSinceStart > 0 && daysElapsed > 0) {
+    const perDay = savedSinceStart / daysElapsed;
+    projectedDate = new Date(now.getTime() + (remaining / perDay) * DAY);
+  }
+
+  const pastDeadline = now.getTime() > targetDate.getTime();
+  let status;
+  if (saved >= target) status = { key: "reached", label: "Reached" };
+  else if (pastDeadline) status = { key: "overdue", label: "Overdue" };
+  else if (actualPerMonth > 0 && actualPerMonth >= requiredPerMonth)
+    status = { key: "ontrack", label: "On track" };
+  else status = { key: "behind", label: "Behind" };
+
+  return {
+    target,
+    saved,
+    remaining,
+    pct,
+    requiredPerMonth,
+    actualPerMonth,
+    projectedDate,
+    monthsRemaining,
+    status,
+  };
+};

@@ -45,6 +45,12 @@ export const API_PATHS = {
     DELETE: (id) => `/api/v1/subscription/${id}`,
     CHARGE_NOW: (id) => `/api/v1/subscription/${id}/charge`,
   },
+  GOAL: {
+    GET_ALL: "/api/v1/goal/get",
+    ADD: "/api/v1/goal/add",
+    UPDATE: (id) => `/api/v1/goal/${id}`,
+    DELETE: (id) => `/api/v1/goal/${id}`,
+  },
   CREDIT_CARD: {
     GET_ALL: "/api/v1/credit-card/get",
     ADD: "/api/v1/credit-card/add",

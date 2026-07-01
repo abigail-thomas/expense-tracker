@@ -1,0 +1,220 @@
+================================================================================
+EXPENSE TRACKER — FREE HOSTING / DEPLOYMENT PLAN
+================================================================================
+Purpose: Host the app for free so friends can use it, no paid/custom domain.
+Written: 2026-07-01. This is a reference plan — nothing here is deployed yet.
+
+--------------------------------------------------------------------------------
+0. THE BIG PICTURE — why not just GitHub Pages
+--------------------------------------------------------------------------------
+The app has THREE pieces, each needing a different kind of hosting:
+
+  1. Frontend  (frontend/expense-tracker) — static files after `npm run build`.
+                Can be hosted anywhere that serves static files.
+  2. Backend   (backend/) — a LIVE Node/Express process that must keep running.
+                GitHub Pages CANNOT do this (static only). Needs a Node host.
+  3. Database  — MongoDB. Already on MongoDB Atlas.
+
+GitHub Pages is static-only, so it can host the frontend but NOT the Express
+server. You'd still need a separate backend host, and Pages needs extra config
+for React Router (SPA) routing. Simpler, friendlier free options exist below.
+
+RECOMMENDED FREE STACK:
+  Frontend -> Vercel (or Netlify)
+  Backend  -> Render free web service (or Fly.io / Koyeb)
+  Database -> MongoDB Atlas M0 free tier (512 MB — plenty for a few friends)
+
+Is MongoDB sufficient? YES. Atlas M0 free tier = 512 MB storage, which holds
+hundreds of thousands of expense/income records. No schema or code changes needed.
+
+================================================================================
+1. DATABASE — MongoDB Atlas (free M0)
+================================================================================
+You likely already have this (MONGO_URI in backend/.env). To make it reachable
+from a cloud backend:
+
+  a. Log in to https://cloud.mongodb.com
+  b. Confirm you have an M0 (free, shared) cluster. Storage limit: 512 MB.
+  c. Network Access -> Add IP Address -> "Allow Access from Anywhere"
+     (0.0.0.0/0). Render's free tier does NOT give fixed outbound IPs, so you
+     cannot allow-list a single IP. 0.0.0.0/0 is acceptable because access is
+     still protected by the DB username/password in the connection string.
+  d. Database Access -> confirm a DB user exists with a strong password.
+  e. Copy the connection string (mongodb+srv://...). This becomes MONGO_URI
+     in the backend host's env vars (Section 3). Do NOT hardcode it in code.
+
+CAUTION: M0 does not include automated backups. For an expense tracker this is
+usually fine, but consider an occasional manual `mongodump` if the data matters.
+
+================================================================================
+2. BACKEND — Render free web service
+================================================================================
+Render runs your Express server from server.js.
+
+Deploy steps:
+  a. Push the repo to GitHub (if not already).
+  b. https://render.com -> New -> Web Service -> connect the GitHub repo.
+  c. Settings:
+       Root Directory:    backend
+       Runtime:           Node
+       Build Command:     npm install
+       Start Command:     npm start        (runs `node server.js`)
+       Instance Type:     Free
+  d. Add Environment Variables (see Section 3).
+  e. Deploy. A healthy start logs:
+        Server running on port <PORT>
+        MongoDB connected: ...
+  f. Note the public URL, e.g. https://expense-tracker-api.onrender.com
+     -> this is the frontend's VITE_API_BASE_URL (Section 4).
+
+PORT NOTE: server.js already uses `process.env.PORT || 8000`. Render injects its
+own PORT — do NOT hardcode 8000. The existing code is correct as-is.
+
+------ FREE-TIER GOTCHAS SPECIFIC TO THIS APP (read carefully) ------
+
+  (i) COLD STARTS / SLEEP
+      Render free web services sleep after ~15 min of no traffic. The next
+      request wakes it and takes ~30-50s. Friends will see a slow first load,
+      then it's fast. Acceptable for casual use.
+
+  (ii) SCHEDULERS WON'T FIRE WHILE ASLEEP  <-- important for this app
+      server.js starts two in-process schedulers:
+          startInterestScheduler()       (monthly interest credit to funds)
+          startSubscriptionScheduler()   (posts recurring subscription charges)
+      These rely on the process being awake. On a free tier that sleeps, a
+      timer scheduled for e.g. "last day of month at midnight" may never run
+      because nothing is keeping the server up at that moment.
+      Options:
+        - Accept it and manually trigger/verify around month-end.
+        - Keep the server awake with an external cron pinging the "/" health
+          endpoint every ~10 min (e.g. cron-job.org, free). Note this burns
+          the monthly free compute hours faster.
+        - Move to an always-on host (Fly.io keeps a machine up better; or a
+          paid Render instance) if reliable scheduling becomes important.
+      Verify how the schedulers compute their timing before relying on them
+      in production (see services/interestService.js and
+      services/subscriptionService.js).
+
+  (iii) UPLOADED IMAGES ARE LOST ON RESTART  <-- important for this app
+      Profile image upload (multer) writes files to backend/uploads/ on local
+      disk, served via app.use("/uploads", ...). Render's free filesystem is
+      EPHEMERAL: every deploy, restart, or wake-from-sleep wipes that folder.
+      So uploaded profile pictures will disappear.
+      Options:
+        - Simplest: treat profile images as optional / cosmetic and accept loss.
+        - Proper fix: store images on an external service instead of disk —
+          e.g. Cloudinary free tier (change the upload controller to push to
+          Cloudinary and save the returned URL on the user), or Render Disks
+          (a paid add-on). This is a code change, not just config.
+
+================================================================================
+3. BACKEND ENVIRONMENT VARIABLES (set in Render dashboard)
+================================================================================
+These mirror backend/.env (which is gitignored — copy values, do not commit):
+
+  MONGO_URI    = <Atlas connection string from Section 1>
+  JWT_SECRET   = <a long random secret; generate a NEW strong one for prod>
+  CLIENT_URL   = <the deployed frontend URL, e.g. https://expense-tracker.vercel.app>
+  PORT         = leave UNSET — Render provides it. (Code falls back to 8000 locally.)
+
+CLIENT_URL is critical: server.js configures CORS as
+    cors({ origin: process.env.CLIENT_URL || "*", ... })
+so it must EXACTLY match the frontend's deployed origin (scheme + host, no
+trailing slash), or the browser will block API calls. This is the same class of
+problem as the local 5173 CORS/login trap already documented for this project.
+
+CORS EDGE CASES TO KNOW:
+  - Vercel/Netlify create per-branch "preview" deployments with unique URLs
+    (e.g. expense-tracker-git-xyz.vercel.app). Those origins will NOT match a
+    single CLIENT_URL and will fail CORS. For friends, just share the ONE
+    production URL. If you need previews to work, the CORS origin check in
+    server.js must be widened to accept multiple origins (code change).
+  - Current CORS does not set credentials:true; auth is via a JWT the frontend
+    sends in the Authorization header (allowedHeaders already includes it), so
+    no cookie/credentials config is needed. Good — keep it token-based.
+
+================================================================================
+4. FRONTEND — Vercel (or Netlify)
+================================================================================
+The frontend is Vite + React. It already reads the API base URL from an env var:
+    src/utils/apiPaths.js:
+        BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000"
+So the ONLY wiring needed is pointing VITE_API_BASE_URL at the Render backend.
+
+Deploy steps (Vercel):
+  a. https://vercel.com -> New Project -> import the GitHub repo.
+  b. Settings:
+       Root Directory:    frontend/expense-tracker
+       Framework Preset:  Vite (auto-detected)
+       Build Command:     npm run build     (default)
+       Output Directory:  dist              (default)
+  c. Environment Variable:
+       VITE_API_BASE_URL = <Render backend URL, e.g.
+                            https://expense-tracker-api.onrender.com>
+       (NO trailing slash. Must be set at BUILD time — Vite inlines
+        VITE_* vars into the bundle during `npm run build`, so if you change
+        it later you must REDEPLOY/rebuild for it to take effect.)
+  d. Deploy. Note the URL, e.g. https://expense-tracker.vercel.app
+     -> put THIS value into the backend's CLIENT_URL (Section 3), then
+        redeploy the backend so CORS matches.
+
+SPA ROUTING: Vercel and Netlify handle React Router client-side routes out of
+the box for Vite projects (unlike GitHub Pages, which needs a 404.html hack).
+If a deep link / refresh ever 404s, add a rewrite of all paths to /index.html
+(Vercel: vercel.json rewrites; Netlify: a _redirects file with `/* /index.html 200`).
+
+================================================================================
+5. ORDER OF OPERATIONS (avoids a chicken-and-egg with the two URLs)
+================================================================================
+The frontend needs the backend URL, and the backend (CORS) needs the frontend
+URL. Do it in this order:
+
+  1. Set up Atlas + network access (Section 1).
+  2. Deploy backend to Render WITHOUT CLIENT_URL yet (or set to "*" temporarily).
+     -> get the backend URL.
+  3. Deploy frontend to Vercel with VITE_API_BASE_URL = backend URL.
+     -> get the frontend URL.
+  4. Go back to Render, set CLIENT_URL = frontend URL, and redeploy the backend
+     (this locks CORS down to your real frontend origin instead of "*").
+  5. Test end to end (Section 6).
+
+================================================================================
+6. POST-DEPLOY VERIFICATION CHECKLIST
+================================================================================
+  [ ] Visit backend URL "/" -> shows "Expense Tracker API is running".
+  [ ] Register a new account on the frontend -> succeeds (proves DB write + CORS).
+  [ ] Log out / log in -> succeeds (proves JWT + auth flow).
+  [ ] Add an income and an expense -> persists after refresh (proves DB).
+  [ ] Open browser devtools -> Network: API calls hit the Render URL, no CORS
+      errors in the Console.
+  [ ] Dashboard, insights, funds, subscriptions, credit cards all load.
+  [ ] Download Excel (income/expense) works.
+  [ ] (Known limitation) Profile image upload — expect it to vanish after a
+      backend restart until externalized (Section 2 iii).
+  [ ] First request after ~15 min idle is slow (~30-50s) then fast — expected.
+
+================================================================================
+7. COST / LIMITS SUMMARY (all free tiers, as of 2026)
+================================================================================
+  MongoDB Atlas M0 : 512 MB storage, shared, no backups. Enough for friends.
+  Render free web  : sleeps after ~15 min idle; limited monthly compute hours;
+                     ephemeral disk; slow cold starts.
+  Vercel/Netlify   : generous static hosting + bandwidth; auto-deploy on git push.
+
+  No custom domain needed — you get free *.vercel.app and *.onrender.com URLs.
+
+================================================================================
+8. KNOWN LIMITATIONS TO REVISIT LATER (all stem from free-tier / current code)
+================================================================================
+  1. Backend sleep -> slow first request + unreliable schedulers (interest,
+     subscriptions). Fix: keep-alive ping cron, or an always-on host.
+  2. Ephemeral disk -> uploaded profile images lost on restart.
+     Fix: store images on Cloudinary (free) or similar; save URL on the user.
+  3. Single CLIENT_URL -> preview deployments fail CORS. Fix: multi-origin
+     CORS check in server.js if previews are needed.
+  4. No DB backups on M0 -> occasional manual `mongodump` if data matters.
+  5. Generate a fresh strong JWT_SECRET for production (do not reuse the dev one).
+
+================================================================================
+END OF PLAN
+================================================================================
