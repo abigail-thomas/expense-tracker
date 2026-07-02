@@ -86,7 +86,7 @@ own PORT — do NOT hardcode 8000. The existing code is correct as-is.
       because nothing is keeping the server up at that moment.
       Options:
         - Accept it and manually trigger/verify around month-end.
-        - Keep the server awake with an external cron pinging the "/" health
+        - Keep the server awake with an external cron pinging the "/health"
           endpoint every ~10 min (e.g. cron-job.org, free). Note this burns
           the monthly free compute hours faster.
         - Move to an always-on host (Fly.io keeps a machine up better; or a
@@ -115,13 +115,24 @@ These mirror backend/.env (which is gitignored — copy values, do not commit):
   MONGO_URI    = <Atlas connection string from Section 1>
   JWT_SECRET   = <a long random secret; generate a NEW strong one for prod>
   CLIENT_URL   = <the deployed frontend URL, e.g. https://expense-tracker.vercel.app>
+  NODE_ENV     = production   (see the IMPORTANT note below re: boot order)
   PORT         = leave UNSET — Render provides it. (Code falls back to 8000 locally.)
 
-CLIENT_URL is critical: server.js configures CORS as
-    cors({ origin: process.env.CLIENT_URL || "*", ... })
-so it must EXACTLY match the frontend's deployed origin (scheme + host, no
-trailing slash), or the browser will block API calls. This is the same class of
-problem as the local 5173 CORS/login trap already documented for this project.
+IMPORTANT — startup validation (added during v0 hardening): the server now
+validates env on boot (backend/config/env.js). It ALWAYS requires MONGO_URI and
+JWT_SECRET, and — when NODE_ENV=production — it ALSO requires CLIENT_URL, exiting
+with a clear message if any is missing. Two consequences:
+  - Do NOT run with NODE_ENV=production until CLIENT_URL is set, or the backend
+    will refuse to start. Render AUTO-SETS NODE_ENV=production, so during initial
+    bring-up you must override it to `development` (Section 5, step 2). Flip it
+    back to production in step 4 once CLIENT_URL is known.
+  - NODE_ENV=production also makes error responses generic instead of leaking
+    internal messages. Set it once the frontend URL is known.
+
+CLIENT_URL is critical: server.js locks CORS to exactly this origin (the old
+open "*" fallback was REMOVED). It must EXACTLY match the frontend's deployed
+origin (scheme + host, no trailing slash), or the browser will block API calls.
+This is the same class of problem as the local 5173 CORS/login trap.
 
 CORS EDGE CASES TO KNOW:
   - Vercel/Netlify create per-branch "preview" deployments with unique URLs
@@ -158,10 +169,11 @@ Deploy steps (Vercel):
      -> put THIS value into the backend's CLIENT_URL (Section 3), then
         redeploy the backend so CORS matches.
 
-SPA ROUTING: Vercel and Netlify handle React Router client-side routes out of
-the box for Vite projects (unlike GitHub Pages, which needs a 404.html hack).
-If a deep link / refresh ever 404s, add a rewrite of all paths to /index.html
-(Vercel: vercel.json rewrites; Netlify: a _redirects file with `/* /index.html 200`).
+SPA ROUTING: a `frontend/expense-tracker/vercel.json` is now committed with a
+catch-all rewrite of every path to /index.html, so deep links / hard refreshes
+on client-side routes (e.g. /dashboard) won't 404. Vercel serves real static
+files first and only falls back to the rewrite for unknown paths. (On Netlify
+you'd instead add a `_redirects` file with `/* /index.html 200`.)
 
 ================================================================================
 5. ORDER OF OPERATIONS (avoids a chicken-and-egg with the two URLs)
@@ -170,19 +182,32 @@ The frontend needs the backend URL, and the backend (CORS) needs the frontend
 URL. Do it in this order:
 
   1. Set up Atlas + network access (Section 1).
-  2. Deploy backend to Render WITHOUT CLIENT_URL yet (or set to "*" temporarily).
-     -> get the backend URL.
+  2. Deploy backend to Render with MONGO_URI + JWT_SECRET, plus NODE_ENV set to
+     `development` TEMPORARILY. -> get the backend URL.
+     GOTCHA: Render auto-sets NODE_ENV=production for Node services, which makes
+     startup validation require CLIENT_URL (which you don't have yet), so the
+     server exits with "Missing required environment variable(s): CLIENT_URL".
+     Setting NODE_ENV=development overrides that so it boots. Step 4 flips it
+     back to production once CLIENT_URL is known.
+     NOTE: in dev mode CORS defaults to http://localhost:5173, so the deployed
+     frontend can't call it YET — that's expected; step 4 fixes it.
   3. Deploy frontend to Vercel with VITE_API_BASE_URL = backend URL.
      -> get the frontend URL.
-  4. Go back to Render, set CLIENT_URL = frontend URL, and redeploy the backend
-     (this locks CORS down to your real frontend origin instead of "*").
+  4. Go back to Render and set BOTH:
+        CLIENT_URL = <frontend URL>   (locks CORS to your real origin)
+        NODE_ENV   = production        (enforces CLIENT_URL + hides error detail)
+     Redeploy the backend. It now boots in locked-down production mode.
   5. Test end to end (Section 6).
 
 ================================================================================
 6. POST-DEPLOY VERIFICATION CHECKLIST
 ================================================================================
-  [ ] Visit backend URL "/" -> shows "Expense Tracker API is running".
+  [ ] Visit backend URL "/" -> shows "Personal Finance Manager API is running".
+  [ ] Visit backend URL "/health" -> JSON {status:"ok", db:"connected", ...}.
+      (Use /health for any uptime-monitor / keep-alive ping — it reports DB state
+      and returns 503 if the database is down.)
   [ ] Register a new account on the frontend -> succeeds (proves DB write + CORS).
+      Password must be >= 8 chars (enforced on the server now).
   [ ] Log out / log in -> succeeds (proves JWT + auth flow).
   [ ] Add an income and an expense -> persists after refresh (proves DB).
   [ ] Open browser devtools -> Network: API calls hit the Render URL, no CORS
