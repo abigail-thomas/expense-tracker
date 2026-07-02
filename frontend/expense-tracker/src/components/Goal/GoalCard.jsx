@@ -128,7 +128,9 @@ const GoalCard = ({
         <div>
           <p className="text-xs text-gray-400">Your pace / month</p>
           <p className="font-medium text-gray-800">
-            ${addThousandsSeparator(progress.actualPerMonth)}
+            {progress.actualPerMonth != null
+              ? `$${addThousandsSeparator(progress.actualPerMonth)}`
+              : "—"}
           </p>
         </div>
         <div>

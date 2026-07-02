@@ -85,7 +85,7 @@ const SubscriptionRow = ({ sub, onEdit, onDelete, onToggleActive, onChargeNow })
 
           <div className="shrink-0 flex items-center gap-2">
             <button
-              className="text-gray-400 hover:text-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity cursor-pointer"
+              className="text-gray-400 hover:text-primary transition-colors cursor-pointer"
               onClick={() => onChargeNow(sub)}
               aria-label="Charge now"
               title="Charge now"
@@ -93,7 +93,7 @@ const SubscriptionRow = ({ sub, onEdit, onDelete, onToggleActive, onChargeNow })
               <LuZap className="text-base" />
             </button>
             <button
-              className="text-gray-400 hover:text-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity cursor-pointer"
+              className="text-gray-400 hover:text-primary transition-colors cursor-pointer"
               onClick={() => onToggleActive(sub)}
               aria-label={sub.active ? "Pause" : "Resume"}
               title={sub.active ? "Pause" : "Resume"}
@@ -101,14 +101,14 @@ const SubscriptionRow = ({ sub, onEdit, onDelete, onToggleActive, onChargeNow })
               {sub.active ? <LuPause className="text-base" /> : <LuPlay className="text-base" />}
             </button>
             <button
-              className="text-gray-400 hover:text-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity cursor-pointer"
+              className="text-gray-400 hover:text-primary transition-colors cursor-pointer"
               onClick={() => onEdit(sub)}
               aria-label="Edit"
             >
               <LuPencil className="text-base" />
             </button>
             <button
-              className="text-gray-400 hover:text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity cursor-pointer"
+              className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
               onClick={() => onDelete(sub._id)}
               aria-label="Delete"
             >

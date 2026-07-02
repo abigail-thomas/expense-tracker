@@ -346,7 +346,8 @@ export const netSavingsBetween = (incomeList = [], expenseList = [], start, end)
 //   remaining  = target - saved (floored at 0)
 //   pct        = saved / target (can exceed 1 when over-saved)
 //   requiredPerMonth = what must still be set aside each month to hit target on time
-//   actualPerMonth   = funding pace so far (saved spread over the goal's life)
+//   actualPerMonth   = funding pace so far (saved spread over the goal's life),
+//                      or null when the goal is too new to have a real rate
 //   projectedDate    = when the goal is reached at the current pace (or null)
 //   status     = { key, label } for the badge: reached / ontrack / behind / overdue
 export const computeGoalProgress = (goal, now = new Date()) => {
@@ -366,30 +367,42 @@ export const computeGoalProgress = (goal, now = new Date()) => {
   const pct = target > 0 ? saved / target : 0;
 
   const DAY = 24 * 60 * 60 * 1000;
-  const daysElapsed = Math.max((now - start) / DAY, 0);
+  const MONTH = 365.25 / 12; // average days per month
+  const totalDays = Math.max((targetDate - start) / DAY, 0);
+  const elapsedDays = Math.max((now - start) / DAY, 0);
+  const monthsElapsed = elapsedDays / MONTH;
   // Fractional months remaining until the target date (0 if past).
   const monthsRemaining = Math.max(moment(targetDate).diff(moment(now), "months", true), 0);
 
   const requiredPerMonth =
     remaining > 0 && monthsRemaining > 0 ? remaining / monthsRemaining : 0;
+
   // Funding pace: everything set aside so far, averaged over the goal's life.
-  const actualPerMonth =
-    daysElapsed > 0 ? (saved / daysElapsed) * (365.25 / 12) : 0;
+  // A goal that only just started has no meaningful monthly rate yet — dividing
+  // by a near-zero elapsed time explodes — so pace (and the projection derived
+  // from it) stay `null` until at least a month of history exists.
+  const hasPaceHistory = monthsElapsed >= 1;
+  const actualPerMonth = hasPaceHistory ? saved / monthsElapsed : null;
 
   let projectedDate = null;
   if (saved >= target) {
     projectedDate = now;
-  } else if (saved > 0 && daysElapsed > 0) {
-    const perDay = saved / daysElapsed;
-    projectedDate = new Date(now.getTime() + (remaining / perDay) * DAY);
+  } else if (actualPerMonth && actualPerMonth > 0) {
+    projectedDate = moment(now).add(remaining / actualPerMonth, "months").toDate();
   }
 
+  // On track = ahead of the straight-line pace to target. Until there's enough
+  // history to project a finish date, fall back to comparing cumulative
+  // progress against where a linear schedule would put you by now.
+  const expectedPct = totalDays > 0 ? Math.min(elapsedDays / totalDays, 1) : 1;
   const pastDeadline = now.getTime() > targetDate.getTime();
+  const onTrackByProjection = projectedDate
+    ? projectedDate.getTime() <= targetDate.getTime()
+    : pct >= expectedPct;
   let status;
   if (saved >= target) status = { key: "reached", label: "Reached" };
   else if (pastDeadline) status = { key: "overdue", label: "Overdue" };
-  else if (projectedDate && projectedDate.getTime() <= targetDate.getTime())
-    status = { key: "ontrack", label: "On track" };
+  else if (onTrackByProjection) status = { key: "ontrack", label: "On track" };
   else status = { key: "behind", label: "Behind" };
 
   return {
