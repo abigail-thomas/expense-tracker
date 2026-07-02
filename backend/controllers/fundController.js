@@ -31,7 +31,6 @@ const parseMaturityDate = (raw) => {
 const DEFAULT_FUNDS = [
   { name: "Checking", icon: "landmark", category: "Checking" },
   { name: "Savings", icon: "piggybank", category: "Savings" },
-  { name: "Other", icon: "wallet", category: "Other" },
 ];
 
 // @desc   List the logged-in user's funds (seeding defaults on first use)

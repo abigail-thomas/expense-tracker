@@ -118,6 +118,62 @@ export const updateGoal = async (req, res) => {
   }
 };
 
+// @desc   Add a contribution (deposit) to a goal
+// @route  POST /api/v1/goal/:id/contribution
+export const addContribution = async (req, res) => {
+  try {
+    const { amount, date, note } = req.body;
+
+    if (amount === undefined || amount === "" || isNaN(amount) || Number(amount) === 0) {
+      return res.status(400).json({ message: "Amount must be a non-zero number" });
+    }
+    // date is optional; default to now when omitted/blank.
+    let when = new Date();
+    if (date !== undefined && date !== "" && date !== null) {
+      const parsed = parseDate(date);
+      if (!parsed.ok) {
+        return res.status(400).json({ message: "Date is invalid" });
+      }
+      when = parsed.value;
+    }
+
+    const goal = await Goal.findOne({ _id: req.params.id, userId: req.user.id });
+    if (!goal) {
+      return res.status(404).json({ message: "Goal not found" });
+    }
+
+    goal.contributions.push({
+      amount: Number(amount),
+      date: when,
+      note: (note || "").trim(),
+    });
+    await goal.save();
+    res.status(201).json(goal);
+  } catch (err) {
+    serverError(res, err, "Error adding contribution");
+  }
+};
+
+// @desc   Remove a contribution from a goal
+// @route  DELETE /api/v1/goal/:id/contribution/:contributionId
+export const deleteContribution = async (req, res) => {
+  try {
+    const goal = await Goal.findOne({ _id: req.params.id, userId: req.user.id });
+    if (!goal) {
+      return res.status(404).json({ message: "Goal not found" });
+    }
+    const contribution = goal.contributions.id(req.params.contributionId);
+    if (!contribution) {
+      return res.status(404).json({ message: "Contribution not found" });
+    }
+    contribution.deleteOne();
+    await goal.save();
+    res.status(200).json(goal);
+  } catch (err) {
+    serverError(res, err, "Error deleting contribution");
+  }
+};
+
 // @desc   Delete a goal
 // @route  DELETE /api/v1/goal/:id
 export const deleteGoal = async (req, res) => {

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Input from "../Inputs/Input";
-import IconPicker from "../IconPicker";
+import EditableCategorySelector from "../Inputs/EditableCategorySelector";
+import Modal from "../Modal";
+import { API_PATHS } from "../../utils/apiPaths";
 import { GOAL_ICON_PALETTE } from "../../utils/transactionIcons";
 
 // Form for adding or editing a savings goal (used inside a Modal).
@@ -21,10 +23,17 @@ const AddGoalForm = ({ onAddGoal, initialValues, submitLabel = "Add Goal" }) => 
 
   return (
     <div>
-      <IconPicker
-        options={GOAL_ICON_PALETTE}
-        selected={goal.icon}
-        onSelect={(iconKey) => handleChange("icon", iconKey)}
+      <EditableCategorySelector
+        label="Category"
+        manageTitle="Manage goal categories"
+        itemNoun="category"
+        api={API_PATHS.GOAL_CATEGORY}
+        iconPalette={GOAL_ICON_PALETTE}
+        max={9}
+        selectBy="icon"
+        selectedValue={goal.icon}
+        onSelect={({ icon }) => handleChange("icon", icon)}
+        ModalComponent={Modal}
       />
 
       <Input
@@ -54,7 +63,7 @@ const AddGoalForm = ({ onAddGoal, initialValues, submitLabel = "Add Goal" }) => 
       <Input
         value={goal.startingAmount}
         onChange={({ target }) => handleChange("startingAmount", target.value)}
-        label="Already saved (optional)"
+        label="Opening balance — already set aside (optional)"
         placeholder="0"
         type="number"
       />
@@ -62,7 +71,7 @@ const AddGoalForm = ({ onAddGoal, initialValues, submitLabel = "Add Goal" }) => 
       <Input
         value={goal.startDate}
         onChange={({ target }) => handleChange("startDate", target.value)}
-        label="Count savings from (optional — defaults to today)"
+        label="Goal start date (optional — defaults to today)"
         placeholder=""
         type="date"
       />

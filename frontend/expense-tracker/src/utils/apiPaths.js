@@ -34,6 +34,12 @@ export const API_PATHS = {
     DELETE_EXPENSE: (expenseId) => `/api/v1/expense/${expenseId}`,
     DOWNLOAD_EXPENSE: "/api/v1/expense/downloadexcel",
   },
+  EXPENSE_CATEGORY: {
+    GET_ALL: "/api/v1/expense-category/get",
+    ADD: "/api/v1/expense-category/add",
+    UPDATE: (id) => `/api/v1/expense-category/${id}`,
+    DELETE: (id) => `/api/v1/expense-category/${id}`,
+  },
   FUND: {
     GET_ALL: "/api/v1/fund/get",
     ADD: "/api/v1/fund/add",
@@ -47,11 +53,26 @@ export const API_PATHS = {
     DELETE: (id) => `/api/v1/subscription/${id}`,
     CHARGE_NOW: (id) => `/api/v1/subscription/${id}/charge`,
   },
+  SUBSCRIPTION_CATEGORY: {
+    GET_ALL: "/api/v1/subscription-category/get",
+    ADD: "/api/v1/subscription-category/add",
+    UPDATE: (id) => `/api/v1/subscription-category/${id}`,
+    DELETE: (id) => `/api/v1/subscription-category/${id}`,
+  },
   GOAL: {
     GET_ALL: "/api/v1/goal/get",
     ADD: "/api/v1/goal/add",
     UPDATE: (id) => `/api/v1/goal/${id}`,
     DELETE: (id) => `/api/v1/goal/${id}`,
+    ADD_CONTRIBUTION: (id) => `/api/v1/goal/${id}/contribution`,
+    DELETE_CONTRIBUTION: (id, contributionId) =>
+      `/api/v1/goal/${id}/contribution/${contributionId}`,
+  },
+  GOAL_CATEGORY: {
+    GET_ALL: "/api/v1/goal-category/get",
+    ADD: "/api/v1/goal-category/add",
+    UPDATE: (id) => `/api/v1/goal-category/${id}`,
+    DELETE: (id) => `/api/v1/goal-category/${id}`,
   },
   CREDIT_CARD: {
     GET_ALL: "/api/v1/credit-card/get",

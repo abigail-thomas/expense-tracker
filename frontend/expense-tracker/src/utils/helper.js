@@ -339,27 +339,29 @@ export const netSavingsBetween = (incomeList = [], expenseList = [], start, end)
   return sumInWindow(incomeList) - sumInWindow(expenseList);
 };
 
-// Compute a savings goal's live progress from the raw income/expense lists.
-//   saved      = startingAmount + net savings since the goal's startDate
+// Compute a savings goal's live progress. A goal is a virtual envelope funded
+// by explicit deposits (`goal.contributions`) plus an opening `startingAmount`
+// — it is NOT tied to the user's general income/expenses.
+//   saved      = startingAmount + sum of all contributions
 //   remaining  = target - saved (floored at 0)
 //   pct        = saved / target (can exceed 1 when over-saved)
-//   requiredPerMonth = what must still be saved each month to hit target on time
-//   actualPerMonth   = observed pace since startDate
+//   requiredPerMonth = what must still be set aside each month to hit target on time
+//   actualPerMonth   = funding pace so far (saved spread over the goal's life)
 //   projectedDate    = when the goal is reached at the current pace (or null)
 //   status     = { key, label } for the badge: reached / ontrack / behind / overdue
-export const computeGoalProgress = (
-  goal,
-  incomeList = [],
-  expenseList = [],
-  now = new Date()
-) => {
+export const computeGoalProgress = (goal, now = new Date()) => {
   const target = Number(goal?.targetAmount) || 0;
   const start = new Date(goal?.startDate);
   const targetDate = new Date(goal?.targetDate);
   const startingAmount = Number(goal?.startingAmount) || 0;
 
-  const savedSinceStart = netSavingsBetween(incomeList, expenseList, start, now);
-  const saved = startingAmount + savedSinceStart;
+  const contributions = Array.isArray(goal?.contributions) ? goal.contributions : [];
+  const contributed = contributions.reduce(
+    (acc, c) => acc + (Number(c?.amount) || 0),
+    0
+  );
+
+  const saved = startingAmount + contributed;
   const remaining = Math.max(0, target - saved);
   const pct = target > 0 ? saved / target : 0;
 
@@ -370,14 +372,15 @@ export const computeGoalProgress = (
 
   const requiredPerMonth =
     remaining > 0 && monthsRemaining > 0 ? remaining / monthsRemaining : 0;
+  // Funding pace: everything set aside so far, averaged over the goal's life.
   const actualPerMonth =
-    daysElapsed > 0 ? (savedSinceStart / daysElapsed) * (365.25 / 12) : 0;
+    daysElapsed > 0 ? (saved / daysElapsed) * (365.25 / 12) : 0;
 
   let projectedDate = null;
   if (saved >= target) {
     projectedDate = now;
-  } else if (savedSinceStart > 0 && daysElapsed > 0) {
-    const perDay = savedSinceStart / daysElapsed;
+  } else if (saved > 0 && daysElapsed > 0) {
+    const perDay = saved / daysElapsed;
     projectedDate = new Date(now.getTime() + (remaining / perDay) * DAY);
   }
 
@@ -385,7 +388,7 @@ export const computeGoalProgress = (
   let status;
   if (saved >= target) status = { key: "reached", label: "Reached" };
   else if (pastDeadline) status = { key: "overdue", label: "Overdue" };
-  else if (actualPerMonth > 0 && actualPerMonth >= requiredPerMonth)
+  else if (projectedDate && projectedDate.getTime() <= targetDate.getTime())
     status = { key: "ontrack", label: "On track" };
   else status = { key: "behind", label: "Behind" };
 
@@ -398,6 +401,7 @@ export const computeGoalProgress = (
     actualPerMonth,
     projectedDate,
     monthsRemaining,
+    contributed,
     status,
   };
 };

@@ -12,6 +12,7 @@ import CreditCard from "../models/CreditCard.js";
 export const createExpenseWithEffects = async ({
   userId,
   icon = "",
+  name = "",
   category,
   amount,
   method,
@@ -34,6 +35,7 @@ export const createExpenseWithEffects = async ({
   const expense = await Expense.create({
     userId,
     icon,
+    name,
     category,
     amount,
     method: payMethod,

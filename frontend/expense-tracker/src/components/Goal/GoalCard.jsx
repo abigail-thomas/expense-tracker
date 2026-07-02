@@ -1,24 +1,47 @@
 import React from "react";
 import moment from "moment";
-import { LuPencil, LuTrash2 } from "react-icons/lu";
+import {
+  LuPencil,
+  LuTrash2,
+  LuAlarmClockCheck,
+  LuClockAlert,
+  LuHourglass,
+  LuCircleCheck,
+  LuCirclePlus,
+  LuX,
+} from "react-icons/lu";
 
 import { addThousandsSeparator } from "../../utils/helper";
 import { getIconOption } from "../../utils/transactionIcons";
 
-// Badge + progress-bar colors per goal status.
+// Status icon + progress-bar color per goal status. The status now reads as a
+// single colored icon (label kept as a tooltip) rather than a text pill.
 const STATUS_STYLES = {
-  reached: { badge: "bg-green-100 text-green-700", bar: "bg-green-500" },
-  ontrack: { badge: "bg-purple-100 text-primary", bar: "bg-primary" },
-  behind: { badge: "bg-amber-100 text-amber-700", bar: "bg-amber-500" },
-  overdue: { badge: "bg-rose-100 text-rose-700", bar: "bg-rose-500" },
+  reached: { Icon: LuCircleCheck, color: "text-green-600", bar: "bg-green-500" },
+  ontrack: { Icon: LuAlarmClockCheck, color: "text-primary", bar: "bg-primary" },
+  behind: { Icon: LuClockAlert, color: "text-amber-600", bar: "bg-amber-500" },
+  overdue: { Icon: LuHourglass, color: "text-rose-600", bar: "bg-rose-500" },
 };
 
 // A single savings goal: progress bar, saved/target, pace, and status.
-const GoalCard = ({ goal, progress, onEdit, onDelete }) => {
+const GoalCard = ({
+  goal,
+  progress,
+  onEdit,
+  onDelete,
+  onAddFunds,
+  onDeleteContribution,
+}) => {
   const Icon = getIconOption(goal.icon)?.Icon;
   const styles = STATUS_STYLES[progress.status.key] || STATUS_STYLES.ontrack;
+  const StatusIcon = styles.Icon;
   const pctLabel = Math.round(progress.pct * 100);
   const barWidth = Math.min(100, Math.max(0, progress.pct * 100));
+
+  // Deposits, newest first.
+  const deposits = [...(goal.contributions || [])].sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  );
 
   return (
     <div className="card">
@@ -30,16 +53,26 @@ const GoalCard = ({ goal, progress, onEdit, onDelete }) => {
           <div>
             <h5 className="text-lg font-medium">{goal.name}</h5>
             <p className="text-xs text-gray-400 mt-0.5">
-              Target {moment(goal.targetDate).format("MMM D, YYYY")}
+              Target {moment.utc(goal.targetDate).format("MMM D, YYYY")}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span
-            className={`text-xs font-medium px-2.5 py-1 rounded-full ${styles.badge}`}
+          <StatusIcon
+            className={`text-xl ${styles.color}`}
+            title={progress.status.label}
+            aria-label={progress.status.label}
+          />
+          <span className="sr-only">{progress.status.label}</span>
+          <button
+            type="button"
+            onClick={onAddFunds}
+            className="text-gray-400 hover:text-primary p-1"
+            aria-label="Add funds"
+            title="Add funds"
           >
-            {progress.status.label}
-          </span>
+            <LuCirclePlus />
+          </button>
           <button
             type="button"
             onClick={onEdit}
@@ -109,6 +142,47 @@ const GoalCard = ({ goal, progress, onEdit, onDelete }) => {
           </p>
         </div>
       </div>
+
+      {/* Deposit history */}
+      {deposits.length > 0 ? (
+        <div className="mt-5 border-t border-gray-50 pt-3">
+          <p className="text-xs text-gray-400 mb-1.5">Deposits</p>
+          <ul className="max-h-32 overflow-y-auto text-sm divide-y divide-gray-50">
+            {deposits.map((c) => (
+              <li
+                key={c._id}
+                className="flex items-center justify-between py-1.5 group"
+              >
+                <span className="text-gray-500">
+                  {moment.utc(c.date).format("MMM D, YYYY")}
+                  {c.note ? (
+                    <span className="text-gray-400"> · {c.note}</span>
+                  ) : null}
+                </span>
+                <span className="flex items-center gap-2">
+                  <span
+                    className={`font-medium ${
+                      c.amount < 0 ? "text-rose-600" : "text-gray-800"
+                    }`}
+                  >
+                    {c.amount < 0 ? "-$" : "+$"}
+                    {addThousandsSeparator(Math.abs(c.amount))}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => onDeleteContribution(c._id)}
+                    className="text-gray-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label="Remove deposit"
+                    title="Remove deposit"
+                  >
+                    <LuX />
+                  </button>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       {goal.note ? (
         <p className="text-xs text-gray-400 mt-4 border-t border-gray-50 pt-3">

@@ -107,7 +107,7 @@ const IncomeVsExpense = () => {
         </button>
 
         {/* Summary cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
           <InfoCard
             icon={<LuTrendingUp />}
             label="Total Income"
@@ -216,7 +216,45 @@ const IncomeVsExpense = () => {
         {/* Monthly breakdown table */}
         <div className="card mt-6">
           <h5 className="text-lg font-medium mb-4">Monthly breakdown</h5>
-          <div className="overflow-x-auto">
+          {/* Mobile: one card per month (a cramped 4-col table doesn't fit). */}
+          <div className="space-y-3 md:hidden">
+            {data.map((row) => (
+              <div
+                key={row.month}
+                className="rounded-lg border border-gray-100 p-3"
+              >
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium text-gray-700">
+                    {row.month}
+                  </p>
+                  <span
+                    className={`text-sm font-semibold ${
+                      row.net >= 0 ? "text-gray-800" : "text-rose-600"
+                    }`}
+                  >
+                    {money(row.net)}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div>
+                    <p className="text-[11px] text-gray-400">Income</p>
+                    <p className="text-sm text-green-600">
+                      ${addThousandsSeparator(row.income)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] text-gray-400">Expense</p>
+                    <p className="text-sm text-rose-600">
+                      ${addThousandsSeparator(row.expense)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: full table */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-gray-400 border-b border-gray-100">
@@ -229,7 +267,9 @@ const IncomeVsExpense = () => {
               <tbody>
                 {data.map((row) => (
                   <tr key={row.month} className="border-b border-gray-50">
-                    <td className="py-2.5 pr-4 text-gray-700">{row.month}</td>
+                    <td className="py-2.5 pr-4 text-gray-700 whitespace-nowrap">
+                      {row.month}
+                    </td>
                     <td className="py-2.5 px-4 text-right text-green-600">
                       ${addThousandsSeparator(row.income)}
                     </td>

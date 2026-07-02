@@ -8,7 +8,8 @@ const ExpenseSchema = new mongoose.Schema(
       required: true,
     },
     icon: { type: String, default: "" },
-    category: { type: String, required: true }, // e.g. Groceries, Rent
+    name: { type: String, default: "" }, // free-text label for this expense, e.g. "Aubrey's Birthday Gift"
+    category: { type: String, required: true }, // grouping the icon belongs to, e.g. Groceries, Gift
     amount: { type: Number, required: true },
     method: { type: String, enum: ["debit", "credit"], default: "debit" },
     fund: { type: mongoose.Schema.Types.ObjectId, ref: "Fund", default: null },

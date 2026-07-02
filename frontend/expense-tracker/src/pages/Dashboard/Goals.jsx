@@ -6,6 +6,7 @@ import DashboardLayout from "../../components/layouts/DashboardLayout";
 import IncomeExpenseBarChart from "../../components/Charts/IncomeExpenseBarChart";
 import GoalCard from "../../components/Goal/GoalCard";
 import AddGoalForm from "../../components/Goal/AddGoalForm";
+import AddFundsForm from "../../components/Goal/AddFundsForm";
 import Modal from "../../components/Modal";
 import DeleteAlert from "../../components/DeleteAlert";
 
@@ -26,6 +27,7 @@ const Goals = () => {
   const [expense, setExpense] = useState([]);
   const [openAddModal, setOpenAddModal] = useState(false);
   const [editGoal, setEditGoal] = useState(null);
+  const [fundsGoal, setFundsGoal] = useState(null);
   const [openDeleteAlert, setOpenDeleteAlert] = useState({ show: false, data: null });
 
   const fetchGoals = async () => {
@@ -145,6 +147,39 @@ const Goals = () => {
     }
   };
 
+  const handleAddFunds = async (funds) => {
+    if (!funds.amount || isNaN(funds.amount) || Number(funds.amount) === 0) {
+      toast.error("Amount should be a non-zero number.");
+      return;
+    }
+    try {
+      await axiosInstance.post(API_PATHS.GOAL.ADD_CONTRIBUTION(fundsGoal._id), {
+        amount: Number(funds.amount),
+        date: funds.date || undefined,
+        note: funds.note,
+      });
+      setFundsGoal(null);
+      toast.success("Funds added successfully");
+      fetchGoals();
+    } catch (error) {
+      console.error("Error adding funds:", error);
+      toast.error(error.response?.data?.message || "Failed to add funds.");
+    }
+  };
+
+  const handleDeleteContribution = async (goalId, contributionId) => {
+    try {
+      await axiosInstance.delete(
+        API_PATHS.GOAL.DELETE_CONTRIBUTION(goalId, contributionId)
+      );
+      toast.success("Deposit removed");
+      fetchGoals();
+    } catch (error) {
+      console.error("Error removing deposit:", error);
+      toast.error("Failed to remove deposit.");
+    }
+  };
+
   // Map a stored goal to editable form values (dates as YYYY-MM-DD).
   const toFormValues = (g) => ({
     name: g.name || "",
@@ -168,7 +203,7 @@ const Goals = () => {
           </div>
           <button
             type="button"
-            className="add-btn add-btn-fill flex items-center gap-1.5"
+            className="add-btn"
             onClick={() => setOpenAddModal(true)}
           >
             <LuPlus className="text-lg" /> Add Goal
@@ -182,24 +217,24 @@ const Goals = () => {
             Net saved (income − expenses) over the last 6 months.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-            <div className="bg-gray-50 rounded-xl p-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-4">
+            <div className="bg-gray-50 rounded-xl p-3 sm:p-4 flex flex-col">
               <p className="text-xs text-gray-400">Avg saved / month</p>
-              <p className="text-lg font-semibold text-gray-800">
+              <p className="text-xs font-semibold text-gray-800 mt-auto pt-1">
                 {pace.avgPerMonth < 0 ? "-$" : "$"}
                 {addThousandsSeparator(Math.abs(pace.avgPerMonth))}
               </p>
             </div>
-            <div className="bg-gray-50 rounded-xl p-4">
+            <div className="bg-gray-50 rounded-xl p-3 sm:p-4 flex flex-col">
               <p className="text-xs text-gray-400">Net saved (6 mo)</p>
-              <p className="text-lg font-semibold text-gray-800">
+              <p className="text-xs font-semibold text-gray-800 mt-auto pt-1">
                 {pace.netSaved < 0 ? "-$" : "$"}
                 {addThousandsSeparator(Math.abs(pace.netSaved))}
               </p>
             </div>
-            <div className="bg-gray-50 rounded-xl p-4">
+            <div className="bg-gray-50 rounded-xl p-3 sm:p-4 flex flex-col">
               <p className="text-xs text-gray-400">Savings rate</p>
-              <p className="text-lg font-semibold text-gray-800">
+              <p className="text-xs font-semibold text-gray-800 mt-auto pt-1">
                 {(pace.savingsRate * 100).toFixed(1)}%
               </p>
             </div>
@@ -221,9 +256,13 @@ const Goals = () => {
               <GoalCard
                 key={goal._id}
                 goal={goal}
-                progress={computeGoalProgress(goal, income, expense)}
+                progress={computeGoalProgress(goal)}
                 onEdit={() => setEditGoal(goal)}
                 onDelete={() => setOpenDeleteAlert({ show: true, data: goal._id })}
+                onAddFunds={() => setFundsGoal(goal)}
+                onDeleteContribution={(contributionId) =>
+                  handleDeleteContribution(goal._id, contributionId)
+                }
               />
             ))}
           </div>
@@ -259,6 +298,14 @@ const Goals = () => {
               submitLabel="Save Changes"
             />
           )}
+        </Modal>
+
+        <Modal
+          isOpen={!!fundsGoal}
+          onClose={() => setFundsGoal(null)}
+          title={fundsGoal ? `Add funds — ${fundsGoal.name}` : "Add funds"}
+        >
+          {fundsGoal && <AddFundsForm onAddFunds={handleAddFunds} />}
         </Modal>
 
         <Modal

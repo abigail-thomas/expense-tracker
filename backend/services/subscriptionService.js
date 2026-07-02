@@ -46,6 +46,7 @@ export const chargeSubscriptionOnce = async (sub, chargeDate = new Date()) => {
   const expense = await createExpenseWithEffects({
     userId: sub.userId,
     icon: sub.icon,
+    name: sub.name,
     category: sub.name,
     amount: sub.amount,
     method: sub.method,

@@ -13,6 +13,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import { FUND_ICON_PALETTE, getIconOption } from "../../utils/transactionIcons";
 import { addThousandsSeparator } from "../../utils/helper";
+import Modal from "../Modal";
 
 const DEFAULT_ICON = FUND_ICON_PALETTE[0].key;
 
@@ -229,7 +230,7 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
                 <span className="text-sm font-semibold text-gray-800">
                   ${addThousandsSeparator(fund.balance || 0)}
                 </span>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                   <button
                     type="button"
                     onClick={() => openEdit(fund)}
@@ -266,110 +267,118 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
         </div>
       )}
 
-      {editor && (
-        <div className="mt-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
-          <p className="text-[13px] font-medium text-slate-800 mb-2">
-            {editor.id ? "Edit fund" : "New fund"}
-          </p>
-
-          <input
-            type="text"
-            value={editor.name}
-            onChange={(e) => setEditor({ ...editor, name: e.target.value })}
-            placeholder="Fund name"
-            className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none mb-3"
-          />
-
-          <input
-            type="text"
-            value={editor.category}
-            onChange={(e) => setEditor({ ...editor, category: e.target.value })}
-            placeholder="Notes (optional)"
-            className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none mb-3"
-          />
-
-          <input
-            type="number"
-            value={editor.balance}
-            onChange={(e) => setEditor({ ...editor, balance: e.target.value })}
-            placeholder="Balance"
-            className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none mb-3"
-          />
-
-          <div className="relative mb-3">
+      <Modal
+        isOpen={!!editor}
+        onClose={closeEditor}
+        title={editor?.id ? "Edit fund" : "New fund"}
+      >
+        {editor && (
+          <div className="space-y-3">
             <input
-              type="number"
-              step="0.01"
-              min="0"
-              value={editor.apy}
-              onChange={(e) => setEditor({ ...editor, apy: e.target.value })}
-              placeholder="APY (e.g. 3.65)"
-              className="w-full text-sm bg-white rounded px-3 py-2 pr-8 border border-slate-200 outline-none"
+              type="text"
+              value={editor.name}
+              onChange={(e) => setEditor({ ...editor, name: e.target.value })}
+              placeholder="Fund name"
+              className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none">
-              %
-            </span>
-          </div>
-          <p className="text-xs text-gray-400 -mt-2 mb-3">
-            Optional. Earns monthly interest at this rate (e.g. a CD or savings
-            account).
-          </p>
 
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            Maturity date
-          </label>
-          <input
-            type="date"
-            value={editor.maturityDate}
-            onChange={(e) =>
-              setEditor({ ...editor, maturityDate: e.target.value })
-            }
-            className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none mb-1"
-          />
-          <p className="text-xs text-gray-400 mb-3">
-            Optional. For CDs — interest stops accruing once this date is
-            reached. Leave blank for an open-ended account.
-          </p>
+            <input
+              type="text"
+              value={editor.category}
+              onChange={(e) =>
+                setEditor({ ...editor, category: e.target.value })
+              }
+              placeholder="Notes (optional)"
+              className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+            />
 
-          <div className="grid grid-cols-6 gap-2 mb-3">
-            {FUND_ICON_PALETTE.map((opt) => {
-              const active = editor.icon === opt.key;
-              return (
-                <button
-                  key={opt.key}
-                  type="button"
-                  onClick={() => setEditor({ ...editor, icon: opt.key })}
-                  title={opt.label}
-                  className={`flex items-center justify-center py-2 rounded-lg border cursor-pointer ${
-                    active
-                      ? "border-primary bg-purple-50 text-primary"
-                      : "border-gray-200 text-gray-600 hover:bg-white"
-                  }`}
-                >
-                  <opt.Icon className="text-lg" />
-                </button>
-              );
-            })}
-          </div>
+            {/* Balance + APY side by side to save vertical space */}
+            <div className="grid grid-cols-2 gap-3">
+              <input
+                type="number"
+                value={editor.balance}
+                onChange={(e) =>
+                  setEditor({ ...editor, balance: e.target.value })
+                }
+                placeholder="Balance"
+                className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+              />
+              <div className="relative">
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={editor.apy}
+                  onChange={(e) =>
+                    setEditor({ ...editor, apy: e.target.value })
+                  }
+                  placeholder="APY"
+                  className="w-full text-sm bg-white rounded px-3 py-2 pr-8 border border-slate-200 outline-none"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none">
+                  %
+                </span>
+              </div>
+            </div>
 
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={closeEditor}
-              className="flex items-center gap-1 text-xs font-medium text-gray-600 bg-white border border-gray-200 px-3 py-1.5 rounded-lg cursor-pointer"
-            >
-              <LuX /> Cancel
-            </button>
-            <button
-              type="button"
-              onClick={saveEditor}
-              className="flex items-center gap-1 text-xs font-medium text-white bg-primary px-3 py-1.5 rounded-lg cursor-pointer"
-            >
-              <LuCheck /> Save
-            </button>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Maturity date (optional)
+              </label>
+              <input
+                type="date"
+                value={editor.maturityDate}
+                onChange={(e) =>
+                  setEditor({ ...editor, maturityDate: e.target.value })
+                }
+                className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                APY earns monthly interest; for CDs, interest stops at the
+                maturity date.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-6 gap-2">
+              {FUND_ICON_PALETTE.map((opt) => {
+                const active = editor.icon === opt.key;
+                return (
+                  <button
+                    key={opt.key}
+                    type="button"
+                    onClick={() => setEditor({ ...editor, icon: opt.key })}
+                    title={opt.label}
+                    className={`flex items-center justify-center py-2 rounded-lg border cursor-pointer ${
+                      active
+                        ? "border-primary bg-purple-50 text-primary"
+                        : "border-gray-200 text-gray-600 hover:bg-white"
+                    }`}
+                  >
+                    <opt.Icon className="text-lg" />
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex justify-end gap-2 pt-1">
+              <button
+                type="button"
+                onClick={closeEditor}
+                className="flex items-center gap-1 text-xs font-medium text-gray-600 bg-white border border-gray-200 px-3 py-1.5 rounded-lg cursor-pointer"
+              >
+                <LuX /> Cancel
+              </button>
+              <button
+                type="button"
+                onClick={saveEditor}
+                className="flex items-center gap-1 text-xs font-medium text-white bg-primary px-3 py-1.5 rounded-lg cursor-pointer"
+              >
+                <LuCheck /> Save
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 };

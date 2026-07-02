@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import Input from "../Inputs/Input";
-import IconPicker from "../IconPicker";
+import EditableCategorySelector from "../Inputs/EditableCategorySelector";
 import FundSelector from "../Fund/FundSelector";
 import CreditCardSelector from "../CreditCard/CreditCardSelector";
-import { EXPENSE_ICON_OPTIONS } from "../../utils/transactionIcons";
+import Modal from "../Modal";
+import { API_PATHS } from "../../utils/apiPaths";
+import { EXPENSE_ICON_PALETTE } from "../../utils/transactionIcons";
 
 // Form for adding or editing an expense entry (used inside a Modal).
 const AddExpenseForm = ({
@@ -13,6 +15,7 @@ const AddExpenseForm = ({
 }) => {
   const [expense, setExpense] = useState(() => ({
     category: "",
+    name: "",
     amount: "",
     date: "",
     icon: "",
@@ -28,17 +31,26 @@ const AddExpenseForm = ({
 
   return (
     <div>
-      <IconPicker
-        options={EXPENSE_ICON_OPTIONS}
-        selected={expense.icon}
-        onSelect={(iconKey) => handleChange("icon", iconKey)}
+      <EditableCategorySelector
+        label="Category"
+        manageTitle="Manage expense categories"
+        itemNoun="category"
+        api={API_PATHS.EXPENSE_CATEGORY}
+        iconPalette={EXPENSE_ICON_PALETTE}
+        max={9}
+        selectBy="name"
+        selectedValue={expense.category}
+        onSelect={({ name, icon }) =>
+          setExpense((prev) => ({ ...prev, category: name, icon }))
+        }
+        ModalComponent={Modal}
       />
 
       <Input
-        value={expense.category}
-        onChange={({ target }) => handleChange("category", target.value)}
-        label="Category"
-        placeholder="Rent, Groceries, etc"
+        value={expense.name}
+        onChange={({ target }) => handleChange("name", target.value)}
+        label="Name"
+        placeholder=""
         type="text"
       />
 
@@ -100,13 +112,13 @@ const AddExpenseForm = ({
             value={expense.notes}
             onChange={({ target }) => handleChange("notes", target.value)}
             placeholder="Description, will be paid back, etc"
-            rows={3}
+            rows={2}
             className="w-full bg-transparent outline-none resize-none"
           />
         </div>
       </div>
 
-      <div className="flex justify-end mt-6">
+      <div className="flex justify-end mt-4">
         <button
           type="button"
           className="add-btn add-btn-fill"

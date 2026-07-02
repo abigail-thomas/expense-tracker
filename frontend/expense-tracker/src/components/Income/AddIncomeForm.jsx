@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import Input from "../Inputs/Input";
-import IncomeSourceSelector from "./IncomeSourceSelector";
+import EditableCategorySelector from "../Inputs/EditableCategorySelector";
 import FundSelector from "../Fund/FundSelector";
+import Modal from "../Modal";
+import { API_PATHS } from "../../utils/apiPaths";
+import { INCOME_ICON_PALETTE } from "../../utils/transactionIcons";
 
 // Form for adding or editing an income entry (used inside a Modal).
 const AddIncomeForm = ({ onAddIncome, initialValues, submitLabel = "Add Income" }) => {
@@ -23,9 +26,17 @@ const AddIncomeForm = ({ onAddIncome, initialValues, submitLabel = "Add Income" 
 
   return (
     <div>
-      <IncomeSourceSelector
-        selectedName={income.source}
+      <EditableCategorySelector
+        label="Income Source"
+        manageTitle="Manage income sources"
+        itemNoun="source"
+        api={API_PATHS.INCOME_SOURCE}
+        iconPalette={INCOME_ICON_PALETTE}
+        max={9}
+        selectBy="name"
+        selectedValue={income.source}
         onSelect={handleSelectSource}
+        ModalComponent={Modal}
       />
 
       <Input
@@ -57,13 +68,13 @@ const AddIncomeForm = ({ onAddIncome, initialValues, submitLabel = "Add Income" 
             value={income.notes}
             onChange={({ target }) => handleChange("notes", target.value)}
             placeholder="Invoice #, client, project, etc"
-            rows={3}
+            rows={2}
             className="w-full bg-transparent outline-none resize-none"
           />
         </div>
       </div>
 
-      <div className="flex justify-end mt-6">
+      <div className="flex justify-end mt-4">
         <button
           type="button"
           className="add-btn add-btn-fill"

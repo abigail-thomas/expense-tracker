@@ -1,6 +1,9 @@
 import IncomeSource from "../models/IncomeSource.js";
 import { serverError } from "../middleware/errorMiddleware.js";
 
+// A user can keep at most this many income sources.
+const MAX_SOURCES = 9;
+
 // @desc   List the logged-in user's income sources
 // @route  GET /api/v1/income-source/get
 export const getIncomeSources = async (req, res) => {
@@ -21,6 +24,13 @@ export const addIncomeSource = async (req, res) => {
     const { name, icon } = req.body;
     if (!name || !name.trim()) {
       return res.status(400).json({ message: "Name is required" });
+    }
+
+    const count = await IncomeSource.countDocuments({ userId: req.user.id });
+    if (count >= MAX_SOURCES) {
+      return res
+        .status(400)
+        .json({ message: `You can have at most ${MAX_SOURCES} sources` });
     }
 
     const exists = await IncomeSource.findOne({

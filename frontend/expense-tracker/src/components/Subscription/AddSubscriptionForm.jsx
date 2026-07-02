@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import Input from "../Inputs/Input";
-import IconPicker from "../IconPicker";
+import EditableCategorySelector from "../Inputs/EditableCategorySelector";
 import FundSelector from "../Fund/FundSelector";
 import CreditCardSelector from "../CreditCard/CreditCardSelector";
+import Modal from "../Modal";
+import { API_PATHS } from "../../utils/apiPaths";
 import { SUBSCRIPTION_ICON_OPTIONS } from "../../utils/transactionIcons";
 import { SUBSCRIPTION_FREQUENCIES } from "../../utils/data";
 
@@ -31,10 +33,17 @@ const AddSubscriptionForm = ({
 
   return (
     <div>
-      <IconPicker
-        options={SUBSCRIPTION_ICON_OPTIONS}
-        selected={sub.icon}
-        onSelect={(iconKey) => handleChange("icon", iconKey)}
+      <EditableCategorySelector
+        label="Category"
+        manageTitle="Manage subscription categories"
+        itemNoun="category"
+        api={API_PATHS.SUBSCRIPTION_CATEGORY}
+        iconPalette={SUBSCRIPTION_ICON_OPTIONS}
+        max={9}
+        selectBy="icon"
+        selectedValue={sub.icon}
+        onSelect={({ icon }) => handleChange("icon", icon)}
+        ModalComponent={Modal}
       />
 
       <Input

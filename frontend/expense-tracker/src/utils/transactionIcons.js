@@ -30,6 +30,17 @@ import {
   LuCar,
   LuGraduationCap,
   LuPalette,
+  LuShield,
+  LuHeart,
+  LuHeartPulse,
+  LuBaby,
+  LuSmartphone,
+  LuCamera,
+  LuGem,
+  LuTarget,
+  LuTrophy,
+  LuPawPrint,
+  LuBike,
 } from "react-icons/lu";
 
 // Preset icons used across the app. `key` is stored on a record's `icon` field
@@ -42,6 +53,20 @@ export const EXPENSE_ICON_OPTIONS = [
   { key: "groceries", label: "Groceries", Icon: LuShoppingCart },
   { key: "appointments", label: "Appointments", Icon: LuCalendarCheck },
   { key: "travel", label: "Travel", Icon: LuPlane },
+  { key: "other", label: "Other", Icon: LuEllipsis },
+];
+
+// Icon palette a user can pick from when creating/editing their own expense category.
+export const EXPENSE_ICON_PALETTE = [
+  { key: "food", label: "Food", Icon: LuUtensils },
+  { key: "gas", label: "Gas", Icon: LuFuel },
+  { key: "groceries", label: "Groceries", Icon: LuShoppingCart },
+  { key: "appointments", label: "Appointments", Icon: LuCalendarCheck },
+  { key: "travel", label: "Travel", Icon: LuPlane },
+  { key: "home", label: "Home", Icon: LuHouse },
+  { key: "utilities", label: "Utilities", Icon: LuCog },
+  { key: "card", label: "Card", Icon: LuCreditCard },
+  { key: "gift", label: "Gifts", Icon: LuGift },
   { key: "other", label: "Other", Icon: LuEllipsis },
 ];
 
@@ -70,7 +95,7 @@ export const INCOME_ICON_PALETTE = [
   { key: "building", label: "Company", Icon: LuBuilding2 },
   { key: "wallet", label: "Wallet", Icon: LuWallet },
   { key: "dollar", label: "Cash", Icon: LuDollarSign },
-  { key: "gift", label: "Gift", Icon: LuGift },
+  { key: "gift", label: "Gifts", Icon: LuGift },
   { key: "other", label: "Other", Icon: LuEllipsis },
 ];
 
@@ -101,6 +126,18 @@ export const GOAL_ICON_PALETTE = [
   { key: "travel", label: "Travel", Icon: LuPlane },
   { key: "education", label: "Education", Icon: LuGraduationCap },
   { key: "hobbies", label: "Hobbies", Icon: LuPalette },
+  { key: "savings", label: "Savings", Icon: LuPiggyBank },
+  { key: "emergency", label: "Emergency fund", Icon: LuShield },
+  { key: "health", label: "Health", Icon: LuHeartPulse },
+  { key: "wedding", label: "Wedding", Icon: LuHeart },
+  { key: "baby", label: "Baby", Icon: LuBaby },
+  { key: "tech", label: "Tech", Icon: LuSmartphone },
+  { key: "camera", label: "Camera", Icon: LuCamera },
+  { key: "jewelry", label: "Jewelry", Icon: LuGem },
+  { key: "target", label: "Target", Icon: LuTarget },
+  { key: "trophy", label: "Trophy", Icon: LuTrophy },
+  { key: "pet", label: "Pet", Icon: LuPawPrint },
+  { key: "bike", label: "Bike", Icon: LuBike },
   { key: "gifts", label: "Gifts", Icon: LuGift },
   { key: "debt", label: "Debt", Icon: LuCreditCard },
   { key: "other", label: "Other", Icon: LuEllipsis },
@@ -108,6 +145,7 @@ export const GOAL_ICON_PALETTE = [
 
 const ALL_ICON_OPTIONS = [
   ...EXPENSE_ICON_OPTIONS,
+  ...EXPENSE_ICON_PALETTE,
   ...SUBSCRIPTION_ICON_OPTIONS,
   ...INCOME_ICON_PALETTE,
   ...FUND_ICON_PALETTE,

@@ -24,6 +24,7 @@ import NotFound from "./pages/NotFound";
 import UserProvider from "./context/UserProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
+import ScrollToTop from "./components/ScrollToTop";
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ const App = () => {
       <UserProvider>
       <div>
         <Router>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Root />} />
             <Route path="/login" element={<Login />} />

@@ -43,8 +43,9 @@ const Expense = () => {
     return null;
   };
 
-  const buildPayload = ({ category, amount, date, icon, method, fund, creditCard, notes }) => ({
+  const buildPayload = ({ category, name, amount, date, icon, method, fund, creditCard, notes }) => ({
     category,
+    name,
     amount,
     date,
     icon,
@@ -96,6 +97,7 @@ const Expense = () => {
   // Map a stored expense (with populated fund/card) to editable form values.
   const toFormValues = (e) => ({
     category: e.category || "",
+    name: e.name || "",
     amount: e.amount ?? "",
     date: e.date ? e.date.slice(0, 10) : "",
     icon: e.icon || "",

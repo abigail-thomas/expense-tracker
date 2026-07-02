@@ -11,7 +11,7 @@ export const addExpense = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const { icon, category, amount, method, fund, creditCard, notes, date } = req.body;
+    const { icon, name, category, amount, method, fund, creditCard, notes, date } = req.body;
 
     if (!category || amount === undefined || amount === null) {
       return res.status(400).json({ message: "Category and amount are required" });
@@ -20,6 +20,7 @@ export const addExpense = async (req, res) => {
     const expense = await createExpenseWithEffects({
       userId,
       icon,
+      name,
       category,
       amount,
       method,
@@ -46,7 +47,7 @@ export const updateExpense = async (req, res) => {
       return res.status(404).json({ message: "Expense not found" });
     }
 
-    const { icon, category, amount, method, fund, creditCard, notes, date } = req.body;
+    const { icon, name, category, amount, method, fund, creditCard, notes, date } = req.body;
     if (!category || amount === undefined || amount === null) {
       return res.status(400).json({ message: "Category and amount are required" });
     }
@@ -86,6 +87,7 @@ export const updateExpense = async (req, res) => {
 
     // 3) Persist the new field values.
     existing.icon = icon;
+    existing.name = name;
     existing.category = category;
     existing.amount = newAmount;
     existing.method = payMethod;
@@ -162,7 +164,8 @@ export const downloadExpenseExcel = async (req, res) => {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet("Expense");
     sheet.columns = [
-      { header: "Category", key: "category", width: 25 },
+      { header: "Name", key: "name", width: 25 },
+      { header: "Category", key: "category", width: 20 },
       { header: "Amount", key: "amount", width: 15 },
       { header: "Method", key: "method", width: 12 },
       { header: "Fund", key: "fund", width: 18 },
@@ -172,6 +175,7 @@ export const downloadExpenseExcel = async (req, res) => {
     ];
     expense.forEach((item) => {
       sheet.addRow({
+        name: item.name || item.category,
         category: item.category,
         amount: item.amount,
         method: item.method,

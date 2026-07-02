@@ -15,6 +15,7 @@ import axiosInstance from "../../utils/axiosInstance";
 import { API_PATHS } from "../../utils/apiPaths";
 import { CREDIT_ICON_PALETTE, getIconOption } from "../../utils/transactionIcons";
 import { addThousandsSeparator, getCreditCardDueInfo } from "../../utils/helper";
+import Modal from "../Modal";
 
 const DEFAULT_ICON = CREDIT_ICON_PALETTE[0].key;
 
@@ -209,11 +210,13 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
                           className="flex items-center gap-1 text-[11px] font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full"
                         >
                           <LuClockAlert className="text-xs" />
-                          {dueInfo.daysUntil === 0
-                            ? "Due today"
-                            : dueInfo.daysUntil === 1
-                            ? "Due tomorrow"
-                            : `Due in ${dueInfo.daysUntil}d`}
+                          <span className="hidden md:inline">
+                            {dueInfo.daysUntil === 0
+                              ? "Due today"
+                              : dueInfo.daysUntil === 1
+                              ? "Due tomorrow"
+                              : `Due in ${dueInfo.daysUntil}d`}
+                          </span>
                         </span>
                       )}
                     </div>
@@ -224,7 +227,7 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                   <button
                     type="button"
                     onClick={() => openPayment(card)}
@@ -268,55 +271,6 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
                 </span>
               </div>
 
-              {/* Inline payment form */}
-              {payment?.cardId === card._id && (
-                <div className="mt-3 p-3 border border-gray-200 rounded-lg bg-gray-50">
-                  <p className="text-[13px] font-medium text-slate-800 mb-2">
-                    Make a payment
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <select
-                      value={payment.fundId}
-                      onChange={(e) =>
-                        setPayment({ ...payment, fundId: e.target.value })
-                      }
-                      className="flex-1 text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
-                    >
-                      <option value="">Pay from…</option>
-                      {funds.map((f) => (
-                        <option key={f._id} value={f._id}>
-                          {f.name} (${addThousandsSeparator(f.balance || 0)})
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      type="number"
-                      value={payment.amount}
-                      onChange={(e) =>
-                        setPayment({ ...payment, amount: e.target.value })
-                      }
-                      placeholder="Amount"
-                      className="flex-1 text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
-                    />
-                  </div>
-                  <div className="flex justify-end gap-2 mt-2">
-                    <button
-                      type="button"
-                      onClick={closePayment}
-                      className="flex items-center gap-1 text-xs font-medium text-gray-600 bg-white border border-gray-200 px-3 py-1.5 rounded-lg cursor-pointer"
-                    >
-                      <LuX /> Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={submitPayment}
-                      className="flex items-center gap-1 text-xs font-medium text-white bg-primary px-3 py-1.5 rounded-lg cursor-pointer"
-                    >
-                      <LuWallet /> Pay
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
           );
         })}
@@ -328,114 +282,182 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
         )}
       </div>
 
-      {editor && (
-        <div className="mt-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
-          <p className="text-[13px] font-medium text-slate-800 mb-2">
-            {editor.id ? "Edit card" : "New card"}
-          </p>
+      <Modal
+        isOpen={!!editor}
+        onClose={closeEditor}
+        title={editor?.id ? "Edit card" : "New card"}
+      >
+        {editor && (
+          <div className="space-y-3">
+            <input
+              type="text"
+              value={editor.name}
+              onChange={(e) => setEditor({ ...editor, name: e.target.value })}
+              placeholder="Card name (e.g. Chase Sapphire)"
+              className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+            />
 
-          <input
-            type="text"
-            value={editor.name}
-            onChange={(e) => setEditor({ ...editor, name: e.target.value })}
-            placeholder="Card name (e.g. Chase Sapphire)"
-            className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none mb-3"
-          />
-
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            <div>
-              <label className="text-[11px] text-slate-500">Credit limit</label>
-              <input
-                type="number"
-                value={editor.limit}
-                onChange={(e) => setEditor({ ...editor, limit: e.target.value })}
-                placeholder="0"
-                className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
-              />
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[11px] text-slate-500">
+                  Credit limit
+                </label>
+                <input
+                  type="number"
+                  value={editor.limit}
+                  onChange={(e) =>
+                    setEditor({ ...editor, limit: e.target.value })
+                  }
+                  placeholder="0"
+                  className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-[11px] text-slate-500">
+                  Balance owed
+                </label>
+                <input
+                  type="number"
+                  value={editor.balance}
+                  onChange={(e) =>
+                    setEditor({ ...editor, balance: e.target.value })
+                  }
+                  placeholder="0"
+                  className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+                />
+              </div>
             </div>
-            <div>
-              <label className="text-[11px] text-slate-500">Balance owed</label>
-              <input
-                type="number"
-                value={editor.balance}
-                onChange={(e) => setEditor({ ...editor, balance: e.target.value })}
-                placeholder="0"
-                className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
-              />
+
+            <div className="grid grid-cols-2 gap-2 items-end">
+              <div>
+                <label className="text-[11px] text-slate-500 flex items-center gap-1 whitespace-nowrap">
+                  Cash-back rate (%)
+                  <span title={REWARDS_TOOLTIP} className="cursor-help">
+                    <LuInfo className="text-xs text-gray-400" />
+                  </span>
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={editor.rewardRate}
+                  onChange={(e) =>
+                    setEditor({ ...editor, rewardRate: e.target.value })
+                  }
+                  placeholder="e.g. 1.5"
+                  className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-[11px] text-slate-500">
+                  Payment due day
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="31"
+                  step="1"
+                  value={editor.dueDay}
+                  onChange={(e) =>
+                    setEditor({ ...editor, dueDay: e.target.value })
+                  }
+                  placeholder="1-31"
+                  className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-6 gap-2">
+              {CREDIT_ICON_PALETTE.map((opt) => {
+                const active = editor.icon === opt.key;
+                return (
+                  <button
+                    key={opt.key}
+                    type="button"
+                    onClick={() => setEditor({ ...editor, icon: opt.key })}
+                    title={opt.label}
+                    className={`flex items-center justify-center py-2 rounded-lg border cursor-pointer ${
+                      active
+                        ? "border-primary bg-purple-50 text-primary"
+                        : "border-gray-200 text-gray-600 hover:bg-white"
+                    }`}
+                  >
+                    <opt.Icon className="text-lg" />
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex justify-end gap-2 pt-1">
+              <button
+                type="button"
+                onClick={closeEditor}
+                className="flex items-center gap-1 text-xs font-medium text-gray-600 bg-white border border-gray-200 px-3 py-1.5 rounded-lg cursor-pointer"
+              >
+                <LuX /> Cancel
+              </button>
+              <button
+                type="button"
+                onClick={saveEditor}
+                className="flex items-center gap-1 text-xs font-medium text-white bg-primary px-3 py-1.5 rounded-lg cursor-pointer"
+              >
+                <LuCheck /> Save
+              </button>
             </div>
           </div>
+        )}
+      </Modal>
 
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            <div>
-              <label className="text-[11px] text-slate-500 flex items-center gap-1">
-                Cash-back rate (%)
-                <span title={REWARDS_TOOLTIP} className="cursor-help">
-                  <LuInfo className="text-xs text-gray-400" />
-                </span>
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                value={editor.rewardRate}
-                onChange={(e) => setEditor({ ...editor, rewardRate: e.target.value })}
-                placeholder="e.g. 1.5"
-                className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
-              />
-            </div>
-            <div>
-              <label className="text-[11px] text-slate-500">Payment due day</label>
-              <input
-                type="number"
-                min="1"
-                max="31"
-                step="1"
-                value={editor.dueDay}
-                onChange={(e) => setEditor({ ...editor, dueDay: e.target.value })}
-                placeholder="Day of month (1-31)"
-                className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-6 gap-2 mb-3">
-            {CREDIT_ICON_PALETTE.map((opt) => {
-              const active = editor.icon === opt.key;
-              return (
-                <button
-                  key={opt.key}
-                  type="button"
-                  onClick={() => setEditor({ ...editor, icon: opt.key })}
-                  title={opt.label}
-                  className={`flex items-center justify-center py-2 rounded-lg border cursor-pointer ${
-                    active
-                      ? "border-primary bg-purple-50 text-primary"
-                      : "border-gray-200 text-gray-600 hover:bg-white"
-                  }`}
-                >
-                  <opt.Icon className="text-lg" />
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={closeEditor}
-              className="flex items-center gap-1 text-xs font-medium text-gray-600 bg-white border border-gray-200 px-3 py-1.5 rounded-lg cursor-pointer"
+      <Modal
+        isOpen={!!payment}
+        onClose={closePayment}
+        title={`Pay ${
+          cards.find((c) => c._id === payment?.cardId)?.name || "card"
+        }`}
+      >
+        {payment && (
+          <div className="space-y-3">
+            <select
+              value={payment.fundId}
+              onChange={(e) =>
+                setPayment({ ...payment, fundId: e.target.value })
+              }
+              className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
             >
-              <LuX /> Cancel
-            </button>
-            <button
-              type="button"
-              onClick={saveEditor}
-              className="flex items-center gap-1 text-xs font-medium text-white bg-primary px-3 py-1.5 rounded-lg cursor-pointer"
-            >
-              <LuCheck /> Save
-            </button>
+              <option value="">Pay from…</option>
+              {funds.map((f) => (
+                <option key={f._id} value={f._id}>
+                  {f.name} (${addThousandsSeparator(f.balance || 0)})
+                </option>
+              ))}
+            </select>
+            <input
+              type="number"
+              value={payment.amount}
+              onChange={(e) =>
+                setPayment({ ...payment, amount: e.target.value })
+              }
+              placeholder="Amount"
+              className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+            />
+            <div className="flex justify-end gap-2 pt-1">
+              <button
+                type="button"
+                onClick={closePayment}
+                className="flex items-center gap-1 text-xs font-medium text-gray-600 bg-white border border-gray-200 px-3 py-1.5 rounded-lg cursor-pointer"
+              >
+                <LuX /> Cancel
+              </button>
+              <button
+                type="button"
+                onClick={submitPayment}
+                className="flex items-center gap-1 text-xs font-medium text-white bg-primary px-3 py-1.5 rounded-lg cursor-pointer"
+              >
+                <LuWallet /> Pay
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 };

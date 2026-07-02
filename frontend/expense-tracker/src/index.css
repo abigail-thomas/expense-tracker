@@ -20,7 +20,7 @@
 }
 
 .input-box {
-  @apply w-full flex justify-between gap-3 text-sm text-black bg-slate-100 rounded px-4 py-3 mb-4 mt-3 border border-slate-200 outline-none;
+  @apply w-full flex justify-between gap-3 text-sm text-black bg-slate-100 rounded px-4 py-2.5 md:py-3 mb-3 md:mb-4 mt-2 md:mt-3 border border-slate-200 outline-none;
 }
 
 .btn-primary {
@@ -40,7 +40,7 @@
 }
 
 .add-btn {
-  @apply flex items-center gap-1.5 text-[13px] font-medium text-primary bg-purple-50 hover:bg-purple-100 px-4 py-2 rounded-lg cursor-pointer;
+  @apply flex items-center gap-1 md:gap-1.5 whitespace-nowrap text-xs md:text-[13px] font-medium text-primary bg-purple-50 hover:bg-purple-100 px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg cursor-pointer;
 }
 
 .add-btn-fill {
@@ -61,6 +61,40 @@
 
 .menu-item-active {
   animation: menuActivate 250ms ease-out;
+}
+
+/* Mobile slide-out menu: panel slides in from the left, backdrop fades in. */
+@keyframes menuSlideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+@keyframes menuFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes menuSlideOut {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+@keyframes menuFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+.menu-slide-in { animation: menuSlideIn 250ms ease-out; }
+.menu-fade-in { animation: menuFadeIn 250ms ease-out; }
+.menu-slide-out { animation: menuSlideOut 250ms ease-in forwards; }
+.menu-fade-out { animation: menuFadeOut 250ms ease-in forwards; }
+
+/* Recharts renders focusable SVG elements; suppress the browser focus outline
+   that appears as a blue box when clicking a pie sector or bar. */
+.recharts-wrapper :focus,
+.recharts-wrapper :focus-visible,
+.recharts-surface,
+.recharts-sector,
+.recharts-rectangle,
+.recharts-bar-rectangle,
+.recharts-layer {
+  outline: none;
 }
 
 /* Modal open/close easing. The modal stays mounted through the close so the
