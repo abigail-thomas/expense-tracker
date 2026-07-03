@@ -76,7 +76,7 @@ const CategoryBreakdown = () => {
         <button
           type="button"
           onClick={() => navigate("/insights")}
-          className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 mb-4"
+          className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 mb-4"
         >
           <LuArrowLeft /> Back to Insights
         </button>
@@ -113,7 +113,7 @@ const CategoryBreakdown = () => {
               </p>
             </div>
 
-            <div className="flex bg-gray-100 rounded-lg p-1">
+            <div className="flex bg-gray-100 dark:bg-gray-700/50 rounded-lg p-1">
               {PERIOD_OPTIONS.map((opt) => (
                 <button
                   key={opt.key}
@@ -121,8 +121,8 @@ const CategoryBreakdown = () => {
                   onClick={() => setPeriod(opt.key)}
                   className={`text-xs px-3 py-1.5 rounded-md ${
                     period === opt.key
-                      ? "bg-white text-primary shadow-sm font-medium"
-                      : "text-gray-500"
+                      ? "bg-white dark:bg-gray-800 text-primary shadow-sm font-medium"
+                      : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
                   {opt.label}
@@ -153,7 +153,7 @@ const CategoryBreakdown = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-gray-400 border-b border-gray-100">
+                  <tr className="text-left text-gray-400 border-b border-gray-100 dark:border-gray-700">
                     <th className="py-2 pr-4 font-medium">Category</th>
                     <th className="py-2 px-4 font-medium text-right">This month</th>
                     <th className="py-2 px-4 font-medium text-right">This year</th>
@@ -166,26 +166,26 @@ const CategoryBreakdown = () => {
                     const Icon = getIconOption(row.icon)?.Icon;
                     return (
                       <tr key={row.icon} className="border-b border-gray-50">
-                        <td className="py-2.5 pr-4 text-gray-700">
+                        <td className="py-2.5 pr-4 text-gray-700 dark:text-gray-200">
                           <span className="flex items-center gap-2">
                             {Icon && (
-                              <span className="w-7 h-7 flex items-center justify-center text-primary bg-purple-50 rounded-full">
+                              <span className="w-7 h-7 flex items-center justify-center text-primary bg-purple-50 dark:bg-purple-500/10 rounded-full">
                                 <Icon />
                               </span>
                             )}
                             {row.category}
                           </span>
                         </td>
-                        <td className="py-2.5 px-4 text-right text-gray-700">
+                        <td className="py-2.5 px-4 text-right text-gray-700 dark:text-gray-200">
                           ${addThousandsSeparator(row.month)}
                         </td>
-                        <td className="py-2.5 px-4 text-right font-medium text-gray-800">
+                        <td className="py-2.5 px-4 text-right font-medium text-gray-800 dark:text-gray-200">
                           ${addThousandsSeparator(row.year)}
                         </td>
-                        <td className="py-2.5 px-4 text-right text-gray-500">
+                        <td className="py-2.5 px-4 text-right text-gray-500 dark:text-gray-400">
                           ${addThousandsSeparator(row.monthlyAvg)}
                         </td>
-                        <td className="py-2.5 pl-4 text-right text-gray-500">
+                        <td className="py-2.5 pl-4 text-right text-gray-500 dark:text-gray-400">
                           {(row.yearShare * 100).toFixed(1)}%
                         </td>
                       </tr>

@@ -169,7 +169,7 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
         <button
           type="button"
           onClick={openAdd}
-          className="flex items-center gap-1 text-xs font-medium text-primary bg-purple-50 px-3 py-1.5 rounded-lg cursor-pointer"
+          className="flex items-center gap-1 text-xs font-medium text-primary bg-purple-50 dark:bg-purple-500/10 px-3 py-1.5 rounded-lg cursor-pointer"
         >
           <LuPlus /> Add Card
         </button>
@@ -194,16 +194,16 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
           return (
             <div
               key={card._id}
-              className="group p-3 rounded-lg border border-gray-100 hover:bg-gray-100/40"
+              className="group p-3 rounded-lg border border-gray-100 dark:border-gray-700 hover:bg-gray-100/40 dark:hover:bg-gray-700/50"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 flex items-center justify-center text-lg text-gray-800 bg-gray-100 rounded-full">
+                  <div className="w-10 h-10 flex items-center justify-center text-lg text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-700/50 rounded-full">
                     {option ? <option.Icon /> : <LuEllipsis />}
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <p className="text-sm text-gray-700 font-medium">{card.name}</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-200 font-medium">{card.name}</p>
                       {dueSoon && (
                         <span
                           title={dueLabel}
@@ -231,7 +231,7 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
                   <button
                     type="button"
                     onClick={() => openPayment(card)}
-                    className="text-xs font-medium text-primary bg-purple-50 px-2.5 py-1 rounded-lg cursor-pointer"
+                    className="text-xs font-medium text-primary bg-purple-50 dark:bg-purple-500/10 px-2.5 py-1 rounded-lg cursor-pointer"
                   >
                     Pay
                   </button>
@@ -239,7 +239,7 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
                     type="button"
                     onClick={() => openEdit(card)}
                     aria-label={`Edit ${card.name}`}
-                    className="w-7 h-7 flex items-center justify-center bg-white border border-gray-200 rounded-full text-gray-500 hover:text-primary cursor-pointer"
+                    className="w-7 h-7 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-gray-500 dark:text-gray-400 hover:text-primary cursor-pointer"
                   >
                     <LuPencil className="text-xs" />
                   </button>
@@ -247,7 +247,7 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
                     type="button"
                     onClick={() => deleteCard(card)}
                     aria-label={`Delete ${card.name}`}
-                    className="w-7 h-7 flex items-center justify-center bg-white border border-gray-200 rounded-full text-gray-500 hover:text-red-500 cursor-pointer"
+                    className="w-7 h-7 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-gray-500 dark:text-gray-400 hover:text-red-500 cursor-pointer"
                   >
                     <LuTrash2 className="text-xs" />
                   </button>
@@ -255,7 +255,7 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
               </div>
 
               {/* Utilization bar */}
-              <div className="mt-3 h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+              <div className="mt-3 h-2 w-full bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-primary rounded-full"
                   style={{ width: `${utilization}%` }}
@@ -263,7 +263,7 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
               </div>
 
               <div className="flex items-center justify-between mt-2 text-xs">
-                <span className="text-gray-500">
+                <span className="text-gray-500 dark:text-gray-400">
                   ${addThousandsSeparator(available)} available
                 </span>
                 <span className="text-green-600 font-medium">
@@ -294,12 +294,12 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
               value={editor.name}
               onChange={(e) => setEditor({ ...editor, name: e.target.value })}
               placeholder="Card name (e.g. Chase Sapphire)"
-              className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+              className="w-full text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border border-slate-200 dark:border-gray-700 outline-none"
             />
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-[11px] text-slate-500">
+                <label className="text-[11px] text-slate-500 dark:text-gray-400">
                   Credit limit
                 </label>
                 <input
@@ -309,11 +309,11 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
                     setEditor({ ...editor, limit: e.target.value })
                   }
                   placeholder="0"
-                  className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+                  className="w-full text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border border-slate-200 dark:border-gray-700 outline-none"
                 />
               </div>
               <div>
-                <label className="text-[11px] text-slate-500">
+                <label className="text-[11px] text-slate-500 dark:text-gray-400">
                   Balance owed
                 </label>
                 <input
@@ -323,14 +323,14 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
                     setEditor({ ...editor, balance: e.target.value })
                   }
                   placeholder="0"
-                  className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+                  className="w-full text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border border-slate-200 dark:border-gray-700 outline-none"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2 items-end">
               <div>
-                <label className="text-[11px] text-slate-500 flex items-center gap-1 whitespace-nowrap">
+                <label className="text-[11px] text-slate-500 dark:text-gray-400 flex items-center gap-1 whitespace-nowrap">
                   Cash-back rate (%)
                   <span title={REWARDS_TOOLTIP} className="cursor-help">
                     <LuInfo className="text-xs text-gray-400" />
@@ -344,11 +344,11 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
                     setEditor({ ...editor, rewardRate: e.target.value })
                   }
                   placeholder="e.g. 1.5"
-                  className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+                  className="w-full text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border border-slate-200 dark:border-gray-700 outline-none"
                 />
               </div>
               <div>
-                <label className="text-[11px] text-slate-500">
+                <label className="text-[11px] text-slate-500 dark:text-gray-400">
                   Payment due day
                 </label>
                 <input
@@ -361,7 +361,7 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
                     setEditor({ ...editor, dueDay: e.target.value })
                   }
                   placeholder="1-31"
-                  className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+                  className="w-full text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border border-slate-200 dark:border-gray-700 outline-none"
                 />
               </div>
             </div>
@@ -377,8 +377,8 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
                     title={opt.label}
                     className={`flex items-center justify-center py-2 rounded-lg border cursor-pointer ${
                       active
-                        ? "border-primary bg-purple-50 text-primary"
-                        : "border-gray-200 text-gray-600 hover:bg-white"
+                        ? "border-primary bg-purple-50 dark:bg-purple-500/10 text-primary"
+                        : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-800"
                     }`}
                   >
                     <opt.Icon className="text-lg" />
@@ -391,7 +391,7 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
               <button
                 type="button"
                 onClick={closeEditor}
-                className="flex items-center gap-1 text-xs font-medium text-gray-600 bg-white border border-gray-200 px-3 py-1.5 rounded-lg cursor-pointer"
+                className="flex items-center gap-1 text-xs font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-lg cursor-pointer"
               >
                 <LuX /> Cancel
               </button>
@@ -421,7 +421,7 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
               onChange={(e) =>
                 setPayment({ ...payment, fundId: e.target.value })
               }
-              className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+              className="w-full text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border border-slate-200 dark:border-gray-700 outline-none"
             >
               <option value="">Pay from…</option>
               {funds.map((f) => (
@@ -437,13 +437,13 @@ const CreditCardsOverview = ({ onChange, reloadSignal }) => {
                 setPayment({ ...payment, amount: e.target.value })
               }
               placeholder="Amount"
-              className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+              className="w-full text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border border-slate-200 dark:border-gray-700 outline-none"
             />
             <div className="flex justify-end gap-2 pt-1">
               <button
                 type="button"
                 onClick={closePayment}
-                className="flex items-center gap-1 text-xs font-medium text-gray-600 bg-white border border-gray-200 px-3 py-1.5 rounded-lg cursor-pointer"
+                className="flex items-center gap-1 text-xs font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-lg cursor-pointer"
               >
                 <LuX /> Cancel
               </button>

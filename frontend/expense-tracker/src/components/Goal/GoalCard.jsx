@@ -95,15 +95,15 @@ const GoalCard = ({
       {/* Progress bar */}
       <div className="mt-5">
         <div className="flex items-center justify-between text-sm mb-1.5">
-          <span className="text-gray-700">
-            <span className="font-semibold text-gray-900">
+          <span className="text-gray-700 dark:text-gray-200">
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
               ${addThousandsSeparator(progress.saved)}
             </span>{" "}
             of ${addThousandsSeparator(progress.target)}
           </span>
-          <span className="text-gray-500">{pctLabel}%</span>
+          <span className="text-gray-500 dark:text-gray-400">{pctLabel}%</span>
         </div>
-        <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden">
+        <div className="h-2.5 w-full bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full ${styles.bar}`}
             style={{ width: `${barWidth}%` }}
@@ -115,19 +115,19 @@ const GoalCard = ({
       <div className="grid grid-cols-2 gap-4 mt-5 text-sm">
         <div>
           <p className="text-xs text-gray-400">Still to save</p>
-          <p className="font-medium text-gray-800">
+          <p className="font-medium text-gray-800 dark:text-gray-200">
             ${addThousandsSeparator(progress.remaining)}
           </p>
         </div>
         <div>
           <p className="text-xs text-gray-400">Needed / month</p>
-          <p className="font-medium text-gray-800">
+          <p className="font-medium text-gray-800 dark:text-gray-200">
             ${addThousandsSeparator(progress.requiredPerMonth)}
           </p>
         </div>
         <div>
           <p className="text-xs text-gray-400">Your pace / month</p>
-          <p className="font-medium text-gray-800">
+          <p className="font-medium text-gray-800 dark:text-gray-200">
             {progress.actualPerMonth != null
               ? `$${addThousandsSeparator(progress.actualPerMonth)}`
               : "—"}
@@ -135,7 +135,7 @@ const GoalCard = ({
         </div>
         <div>
           <p className="text-xs text-gray-400">Projected finish</p>
-          <p className="font-medium text-gray-800">
+          <p className="font-medium text-gray-800 dark:text-gray-200">
             {progress.status.key === "reached"
               ? "Reached 🎉"
               : progress.projectedDate
@@ -155,7 +155,7 @@ const GoalCard = ({
                 key={c._id}
                 className="flex items-center justify-between py-1.5 group"
               >
-                <span className="text-gray-500">
+                <span className="text-gray-500 dark:text-gray-400">
                   {moment.utc(c.date).format("MMM D, YYYY")}
                   {c.note ? (
                     <span className="text-gray-400"> · {c.note}</span>
@@ -164,7 +164,7 @@ const GoalCard = ({
                 <span className="flex items-center gap-2">
                   <span
                     className={`font-medium ${
-                      c.amount < 0 ? "text-rose-600" : "text-gray-800"
+                      c.amount < 0 ? "text-rose-600" : "text-gray-800 dark:text-gray-200"
                     }`}
                   >
                     {c.amount < 0 ? "-$" : "+$"}

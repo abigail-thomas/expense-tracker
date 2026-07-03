@@ -24,7 +24,7 @@ const RecurringIncomeTrends = ({ trends = [], recurring = [] }) => {
       )}
 
       <div className="mt-4">
-        <p className="text-xs font-medium text-gray-500 mb-2">
+        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
           Recurring sources
         </p>
 
@@ -41,14 +41,14 @@ const RecurringIncomeTrends = ({ trends = [], recurring = [] }) => {
               return (
                 <div
                   key={item.source}
-                  className="flex items-center justify-between gap-3 p-3 rounded-lg hover:bg-gray-100/60"
+                  className="flex items-center justify-between gap-3 p-3 rounded-lg hover:bg-gray-100/60 dark:hover:bg-gray-700/40"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 flex items-center justify-center text-lg text-gray-800 bg-gray-100 rounded-full">
+                    <div className="w-10 h-10 flex items-center justify-center text-lg text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-700/50 rounded-full">
                       {Icon ? <Icon /> : <LuEllipsis />}
                     </div>
                     <div>
-                      <p className="text-sm text-gray-700 font-medium">
+                      <p className="text-sm text-gray-700 dark:text-gray-200 font-medium">
                         {item.source}
                       </p>
                       <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">

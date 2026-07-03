@@ -218,23 +218,23 @@ const Goals = () => {
           </p>
 
           <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-4">
-            <div className="bg-gray-50 rounded-xl p-3 sm:p-4 flex flex-col">
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 sm:p-4 flex flex-col">
               <p className="text-xs text-gray-400">Avg saved / month</p>
-              <p className="text-xs font-semibold text-gray-800 mt-auto pt-1">
+              <p className="text-xs font-semibold text-gray-800 dark:text-gray-200 mt-auto pt-1">
                 {pace.avgPerMonth < 0 ? "-$" : "$"}
                 {addThousandsSeparator(Math.abs(pace.avgPerMonth))}
               </p>
             </div>
-            <div className="bg-gray-50 rounded-xl p-3 sm:p-4 flex flex-col">
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 sm:p-4 flex flex-col">
               <p className="text-xs text-gray-400">Net saved (6 mo)</p>
-              <p className="text-xs font-semibold text-gray-800 mt-auto pt-1">
+              <p className="text-xs font-semibold text-gray-800 dark:text-gray-200 mt-auto pt-1">
                 {pace.netSaved < 0 ? "-$" : "$"}
                 {addThousandsSeparator(Math.abs(pace.netSaved))}
               </p>
             </div>
-            <div className="bg-gray-50 rounded-xl p-3 sm:p-4 flex flex-col">
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 sm:p-4 flex flex-col">
               <p className="text-xs text-gray-400">Savings rate</p>
-              <p className="text-xs font-semibold text-gray-800 mt-auto pt-1">
+              <p className="text-xs font-semibold text-gray-800 dark:text-gray-200 mt-auto pt-1">
                 {(pace.savingsRate * 100).toFixed(1)}%
               </p>
             </div>
@@ -268,10 +268,10 @@ const Goals = () => {
           </div>
         ) : (
           <div className="card mt-6 text-center py-12">
-            <div className="w-14 h-14 mx-auto flex items-center justify-center text-2xl text-primary bg-purple-50 rounded-full">
+            <div className="w-14 h-14 mx-auto flex items-center justify-center text-2xl text-primary bg-purple-50 dark:bg-purple-500/10 rounded-full">
               <LuLandPlot />
             </div>
-            <p className="text-sm text-gray-500 mt-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
               No goals yet. Create one — e.g. "Save $4,000 by Dec 31" — to start
               tracking your progress.
             </p>

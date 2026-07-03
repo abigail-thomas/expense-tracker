@@ -6,6 +6,7 @@ import {
   LuRepeat,
   LuLandPlot,
   LuUser,
+  LuSettings,
   LuLogOut,
 } from "react-icons/lu";
 
@@ -55,6 +56,12 @@ export const SIDE_MENU_DATA = [
   },
   {
     id: "08",
+    label: "Settings",
+    icon: LuSettings,
+    path: "/settings",
+  },
+  {
+    id: "09",
     label: "Logout",
     icon: LuLogOut,
     path: "logout",

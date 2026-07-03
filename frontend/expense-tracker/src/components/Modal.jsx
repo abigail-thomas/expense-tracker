@@ -71,17 +71,17 @@ const Modal = ({ children, isOpen, onClose, title }) => {
           the header stays put and the body scrolls if content is tall. */}
       <div
         onAnimationEnd={handleAnimationEnd}
-        className={`relative flex flex-col w-full max-w-2xl max-h-[calc(100dvh-2rem)] bg-white rounded-lg shadow-sm overflow-hidden ${
+        className={`relative flex flex-col w-full max-w-2xl max-h-[calc(100dvh-2rem)] bg-white dark:bg-gray-800 dark:text-gray-100 rounded-lg shadow-sm overflow-hidden ${
           closing ? "modal-panel-out" : "modal-panel-in"
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 md:p-5 border-b border-gray-200 rounded-t shrink-0">
-          <h3 className="text-lg font-medium text-gray-900">{title}</h3>
+        <div className="flex items-center justify-between p-4 md:p-5 border-b border-gray-200 dark:border-gray-700 rounded-t shrink-0">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{title}</h3>
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center cursor-pointer"
+            className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-white rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center cursor-pointer"
           >
             <LuX className="text-lg" />
           </button>

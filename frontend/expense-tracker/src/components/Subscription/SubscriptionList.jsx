@@ -21,8 +21,8 @@ const SubscriptionRow = ({ sub, onEdit, onDelete, onToggleActive, onChargeNow })
   const accountName = sub.fund?.name || sub.creditCard?.name;
 
   return (
-    <div className="group relative flex items-start gap-3 sm:gap-4 mt-2 p-3 rounded-lg hover:bg-gray-100/60">
-      <div className="shrink-0 w-12 h-12 flex items-center justify-center text-xl text-gray-800 bg-gray-100 rounded-full">
+    <div className="group relative flex items-start gap-3 sm:gap-4 mt-2 p-3 rounded-lg hover:bg-gray-100/60 dark:hover:bg-gray-700/40">
+      <div className="shrink-0 w-12 h-12 flex items-center justify-center text-xl text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-700/50 rounded-full">
         {PresetIcon ? <PresetIcon /> : sub.icon ? (
           <span className="text-2xl">{sub.icon}</span>
         ) : (
@@ -34,15 +34,15 @@ const SubscriptionRow = ({ sub, onEdit, onDelete, onToggleActive, onChargeNow })
         {/* Title + amount on one line; amount stays pinned to the right. */}
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex items-center gap-2 flex-wrap">
-            <p className="text-sm text-gray-700 font-medium">{sub.name}</p>
+            <p className="text-sm text-gray-700 dark:text-gray-200 font-medium">{sub.name}</p>
             {!sub.active && (
-              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-200 text-gray-500">
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-200 text-gray-500 dark:text-gray-400">
                 Paused
               </span>
             )}
           </div>
 
-          <div className="shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-md bg-red-50 text-red-500">
+          <div className="shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-md bg-red-50 dark:bg-red-500/10 text-red-500 dark:text-red-400">
             <h6 className="text-xs font-medium whitespace-nowrap">
               - ${addThousandsSeparator(sub.amount)}
             </h6>
@@ -71,7 +71,7 @@ const SubscriptionRow = ({ sub, onEdit, onDelete, onToggleActive, onChargeNow })
         <div className="flex items-end justify-between gap-2 mt-1">
           <div className="min-w-0">
             {(sub.method || accountName || sub.notes) && (
-              <p className="text-xs text-gray-500 capitalize">
+              <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
                 {[sub.method, accountName].filter(Boolean).join(" · ")}
                 {sub.notes && (
                   <>

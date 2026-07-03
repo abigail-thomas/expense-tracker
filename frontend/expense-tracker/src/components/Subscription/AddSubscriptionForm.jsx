@@ -63,7 +63,7 @@ const AddSubscriptionForm = ({
       />
 
       <div className="mt-3">
-        <label className="text-[13px] text-slate-800">Billing frequency</label>
+        <label className="text-[13px] text-slate-800 dark:text-gray-200">Billing frequency</label>
         <div className="input-box">
           <select
             value={sub.frequency}
@@ -80,7 +80,7 @@ const AddSubscriptionForm = ({
       </div>
 
       <div className="my-4">
-        <label className="text-[13px] text-slate-800">Charge from</label>
+        <label className="text-[13px] text-slate-800 dark:text-gray-200">Charge from</label>
         <div className="grid grid-cols-2 gap-3 mt-2">
           {["debit", "credit"].map((m) => (
             <button
@@ -90,8 +90,8 @@ const AddSubscriptionForm = ({
               aria-pressed={sub.method === m}
               className={`py-2.5 rounded-lg border text-sm font-medium capitalize transition-colors cursor-pointer ${
                 sub.method === m
-                  ? "border-primary bg-purple-50 text-primary"
-                  : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                  ? "border-primary bg-purple-50 dark:bg-purple-500/10 text-primary"
+                  : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/40"
               }`}
             >
               {m}
@@ -123,7 +123,7 @@ const AddSubscriptionForm = ({
       />
 
       <div className="mt-3">
-        <label className="text-[13px] text-slate-800">Notes (optional)</label>
+        <label className="text-[13px] text-slate-800 dark:text-gray-200">Notes (optional)</label>
         <div className="input-box">
           <textarea
             value={sub.notes}
@@ -135,7 +135,7 @@ const AddSubscriptionForm = ({
         </div>
       </div>
 
-      <label className="flex items-center gap-2 mt-4 text-[13px] text-slate-800 cursor-pointer">
+      <label className="flex items-center gap-2 mt-4 text-[13px] text-slate-800 dark:text-gray-200 cursor-pointer">
         <input
           type="checkbox"
           checked={sub.active}

@@ -71,19 +71,19 @@ const CategoryBreakdownCard = () => {
               return (
                 <div key={c.icon}>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="flex items-center gap-2 text-gray-700">
+                    <span className="flex items-center gap-2 text-gray-700 dark:text-gray-200">
                       {Icon && (
-                        <span className="w-7 h-7 flex items-center justify-center text-primary bg-purple-50 rounded-full">
+                        <span className="w-7 h-7 flex items-center justify-center text-primary bg-purple-50 dark:bg-purple-500/10 rounded-full">
                           <Icon />
                         </span>
                       )}
                       {c.category}
                     </span>
-                    <span className="font-medium text-gray-800">
+                    <span className="font-medium text-gray-800 dark:text-gray-200">
                       ${addThousandsSeparator(c.amount)}
                     </span>
                   </div>
-                  <div className="mt-1.5 h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                  <div className="mt-1.5 h-1.5 w-full bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-primary rounded-full"
                       style={{ width: `${Math.round(c.share * 100)}%` }}
@@ -93,9 +93,9 @@ const CategoryBreakdownCard = () => {
               );
             })}
           </div>
-          <p className="text-sm text-gray-500 mt-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
             This month's spend:{" "}
-            <span className="font-semibold text-gray-800">
+            <span className="font-semibold text-gray-800 dark:text-gray-200">
               ${addThousandsSeparator(total)}
             </span>
           </p>

@@ -21,21 +21,21 @@ const IncomeExpenseTooltip = ({ active, payload, label }) => {
   const point = payload[0]?.payload || {};
   const net = point.net ?? (point.income || 0) - (point.expense || 0);
   return (
-    <div className="bg-white shadow-md rounded-lg p-2 border border-gray-200">
-      <p className="text-xs font-semibold text-purple-800 mb-1">{label}</p>
-      <p className="text-sm text-gray-600">
+    <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-2 border border-gray-200 dark:border-gray-700">
+      <p className="text-xs font-semibold text-purple-800 dark:text-purple-300 mb-1">{label}</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
         Income:{" "}
         <span className="font-medium" style={{ color: INCOME_COLOR }}>
           ${addThousandsSeparator(point.income || 0)}
         </span>
       </p>
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-gray-600 dark:text-gray-400">
         Expense:{" "}
         <span className="font-medium" style={{ color: EXPENSE_COLOR }}>
           ${addThousandsSeparator(point.expense || 0)}
         </span>
       </p>
-      <p className="text-sm text-gray-600 mt-1">
+      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
         Net:{" "}
         <span
           className="font-semibold"
@@ -54,7 +54,7 @@ const IncomeExpenseTooltip = ({ active, payload, label }) => {
 // shorter than the full detail page.
 const IncomeExpenseBarChart = ({ data = [], height = 300, showLegend = true }) => {
   return (
-    <div className="bg-white mt-6">
+    <div className="bg-white dark:bg-gray-800 mt-6">
       <ResponsiveContainer width="100%" height={height}>
         <BarChart data={data} barGap={4}>
           <CartesianGrid stroke="none" />

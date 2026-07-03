@@ -136,7 +136,7 @@ const EditableCategorySelector = ({
   return (
     <div className="mb-4">
       <div className="flex items-center justify-between">
-        <label className="text-[13px] text-slate-800">{label}</label>
+        <label className="text-[13px] text-slate-800 dark:text-gray-200">{label}</label>
         <button
           type="button"
           onClick={openManage}
@@ -159,8 +159,8 @@ const EditableCategorySelector = ({
               title={item.name}
               className={`h-[72px] md:h-[84px] w-full flex flex-col items-center justify-center gap-1 px-1 rounded-lg border transition-colors cursor-pointer ${
                 isActive
-                  ? "border-primary bg-purple-50 text-primary"
-                  : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                  ? "border-primary bg-purple-50 dark:bg-purple-500/10 text-primary"
+                  : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50"
               }`}
             >
               {option ? (
@@ -190,19 +190,19 @@ const EditableCategorySelector = ({
             return (
               <div
                 key={item._id}
-                className="flex items-center gap-3 p-2 rounded-lg border border-gray-100"
+                className="flex items-center gap-3 p-2 rounded-lg border border-gray-100 dark:border-gray-700"
               >
-                <div className="w-9 h-9 shrink-0 flex items-center justify-center bg-gray-100 rounded-full text-gray-700">
+                <div className="w-9 h-9 shrink-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700/50 rounded-full text-gray-700 dark:text-gray-200">
                   {option ? <option.Icon /> : <LuEllipsis />}
                 </div>
-                <span className="flex-1 min-w-0 truncate text-sm text-gray-700">
+                <span className="flex-1 min-w-0 truncate text-sm text-gray-700 dark:text-gray-200">
                   {item.name}
                 </span>
                 <button
                   type="button"
                   onClick={() => openEdit(item)}
                   aria-label={`Edit ${item.name}`}
-                  className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-primary cursor-pointer"
+                  className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:text-primary cursor-pointer"
                 >
                   <LuPencil className="text-sm" />
                 </button>
@@ -210,7 +210,7 @@ const EditableCategorySelector = ({
                   type="button"
                   onClick={() => deleteItem(item)}
                   aria-label={`Delete ${item.name}`}
-                  className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-red-500 cursor-pointer"
+                  className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:text-red-500 cursor-pointer"
                 >
                   <LuTrash2 className="text-sm" />
                 </button>
@@ -223,8 +223,8 @@ const EditableCategorySelector = ({
         </div>
 
         {editor ? (
-          <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-            <p className="text-[13px] font-medium text-slate-800 mb-2">
+          <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+            <p className="text-[13px] font-medium text-slate-800 dark:text-gray-200 mb-2">
               {editor.id ? `Edit ${itemNoun}` : `New ${itemNoun}`}
             </p>
 
@@ -233,7 +233,7 @@ const EditableCategorySelector = ({
               value={editor.name}
               onChange={(e) => setEditor({ ...editor, name: e.target.value })}
               placeholder="Name"
-              className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none mb-3"
+              className="w-full text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border border-slate-200 dark:border-gray-700 outline-none mb-3"
             />
 
             <div className="grid grid-cols-6 gap-2 mb-3">
@@ -247,8 +247,8 @@ const EditableCategorySelector = ({
                     title={opt.label}
                     className={`flex items-center justify-center py-2 rounded-lg border cursor-pointer ${
                       active
-                        ? "border-primary bg-purple-50 text-primary"
-                        : "border-gray-200 text-gray-600 hover:bg-white"
+                        ? "border-primary bg-purple-50 dark:bg-purple-500/10 text-primary"
+                        : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-800"
                     }`}
                   >
                     <opt.Icon className="text-lg" />
@@ -261,7 +261,7 @@ const EditableCategorySelector = ({
               <button
                 type="button"
                 onClick={closeEditor}
-                className="flex items-center gap-1 text-xs font-medium text-gray-600 bg-white border border-gray-200 px-3 py-1.5 rounded-lg cursor-pointer"
+                className="flex items-center gap-1 text-xs font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-lg cursor-pointer"
               >
                 <LuX /> Cancel
               </button>

@@ -63,12 +63,12 @@ const Navbar = ({ activeMenu }) => {
           <html>/<body>, which makes a `sticky` bar drop back to its natural
           (scrolled-away) position. Switch to `fixed` so it stays pinned. */}
       <div
-        className={`flex gap-5 bg-white border-b border-gray-200/50 backdrop-blur-[2px] py-4 px-7 ${
+        className={`flex gap-5 bg-white border-b border-gray-200/50 backdrop-blur-[2px] py-4 px-7 dark:bg-gray-900 dark:border-gray-800 ${
           render ? "fixed top-0 inset-x-0 z-50" : "sticky top-0 z-30"
         }`}
       >
         <button
-          className="relative block lg:hidden text-black w-6 h-6"
+          className="relative block lg:hidden text-black dark:text-gray-100 w-6 h-6"
           onClick={() => setOpenSideMenu(!openSideMenu)}
           aria-label={openSideMenu ? "Close menu" : "Open menu"}
         >
@@ -84,7 +84,7 @@ const Navbar = ({ activeMenu }) => {
           />
         </button>
 
-        <h2 className="text-lg font-medium text-black">
+        <h2 className="text-lg font-medium text-black dark:text-gray-100">
           {user?.fullName ? `Welcome, ${user.fullName}` : "Personal Finance Manager"}
         </h2>
       </div>
@@ -104,7 +104,7 @@ const Navbar = ({ activeMenu }) => {
           />
           <div
             onAnimationEnd={handleAnimationEnd}
-            className={`fixed top-[61px] left-0 z-40 h-[calc(100dvh-61px)] bg-white overflow-y-auto lg:hidden ${
+            className={`fixed top-[61px] left-0 z-40 h-[calc(100dvh-61px)] bg-white dark:bg-gray-900 overflow-y-auto lg:hidden ${
               closing ? "menu-slide-out" : "menu-slide-in"
             }`}
           >

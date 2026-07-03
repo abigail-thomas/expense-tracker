@@ -13,9 +13,9 @@ import {
 
 // Tailwind classes for each balance status badge.
 const STATUS_STYLES = {
-  balanced: "bg-gray-100 text-gray-600",
-  surplus: "bg-green-100 text-green-700",
-  deficit: "bg-rose-100 text-rose-700",
+  balanced: "bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400",
+  surplus: "bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400",
+  deficit: "bg-rose-100 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400",
 };
 
 // Insights card: compact last-6-months Income vs Expense preview. Clicking
@@ -80,7 +80,7 @@ const IncomeVsExpenseCard = () => {
         <>
           <IncomeExpenseBarChart data={data} height={220} />
           <div className="flex items-center justify-between mt-4">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               This month's net:{" "}
               <span
                 className={`font-semibold ${

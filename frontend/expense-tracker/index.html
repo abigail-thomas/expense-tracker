@@ -5,6 +5,16 @@
     <link rel="icon" type="image/svg+xml" href="/icon.svg"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Personal Finance Manager</title>
+    <!-- Apply the saved theme before first paint to avoid a light→dark flash. -->
+    <script>
+      try {
+        if (localStorage.getItem("theme") === "dark") {
+          document.documentElement.classList.add("dark");
+        }
+      } catch (e) {
+        /* localStorage may be unavailable (private mode); default to light. */
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

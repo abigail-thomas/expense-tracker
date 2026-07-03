@@ -47,6 +47,8 @@ app.use(express.json());
 // Rate limit the whole API, with a tighter limit on auth endpoints.
 app.use("/api/v1/auth/login", authLimiter);
 app.use("/api/v1/auth/register", authLimiter);
+app.use("/api/v1/auth/forgot-password", authLimiter);
+app.use("/api/v1/auth/reset-password", authLimiter);
 app.use("/api/v1", apiLimiter);
 
 // Routes

@@ -28,7 +28,7 @@ const AddFundsForm = ({ onAddFunds, submitLabel = "Add Funds" }) => {
       />
 
       <div className="mt-3">
-        <label className="text-[13px] text-slate-800">Note (optional)</label>
+        <label className="text-[13px] text-slate-800 dark:text-gray-200">Note (optional)</label>
         <div className="input-box">
           <textarea
             value={funds.note}

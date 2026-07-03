@@ -62,7 +62,7 @@ const AddIncomeForm = ({ onAddIncome, initialValues, submitLabel = "Add Income" 
       />
 
       <div className="mt-3">
-        <label className="text-[13px] text-slate-800">Notes (optional)</label>
+        <label className="text-[13px] text-slate-800 dark:text-gray-200">Notes (optional)</label>
         <div className="input-box">
           <textarea
             value={income.notes}

@@ -10,6 +10,8 @@ import { Toaster } from "react-hot-toast";
 
 import Login from "./pages/Auth/Login";
 import SignUp from "./pages/Auth/SignUp";
+import ForgotPassword from "./pages/Auth/ForgotPassword";
+import ResetPassword from "./pages/Auth/ResetPassword";
 import Home from "./pages/Dashboard/Home";
 import Income from "./pages/Dashboard/Income";
 import Expense from "./pages/Dashboard/Expense";
@@ -19,9 +21,11 @@ import IncomeVsExpense from "./pages/Dashboard/IncomeVsExpense";
 import CategoryBreakdown from "./pages/Dashboard/CategoryBreakdown";
 import Goals from "./pages/Dashboard/Goals";
 import Profile from "./pages/Dashboard/Profile";
+import Settings from "./pages/Dashboard/Settings";
 import NotFound from "./pages/NotFound";
 
 import UserProvider from "./context/UserProvider";
+import ThemeProvider from "./context/ThemeProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ScrollToTop from "./components/ScrollToTop";
@@ -30,6 +34,7 @@ const App = () => {
   return (
     <ErrorBoundary>
       <UserProvider>
+      <ThemeProvider>
       <div>
         <Router>
           <ScrollToTop />
@@ -37,6 +42,8 @@ const App = () => {
             <Route path="/" element={<Root />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
 
             {/* Routes that require a logged-in user */}
             <Route element={<ProtectedRoute />}>
@@ -55,6 +62,7 @@ const App = () => {
               />
               <Route path="/goals" element={<Goals />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/settings" element={<Settings />} />
             </Route>
 
             {/* Catch-all for unknown routes */}
@@ -69,6 +77,7 @@ const App = () => {
           style: { fontSize: "13px" },
         }}
       />
+      </ThemeProvider>
       </UserProvider>
     </ErrorBoundary>
   );

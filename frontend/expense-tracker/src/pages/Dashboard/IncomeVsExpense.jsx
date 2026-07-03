@@ -101,7 +101,7 @@ const IncomeVsExpense = () => {
         <button
           type="button"
           onClick={() => navigate("/insights")}
-          className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-800 mb-4"
+          className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 mb-4"
         >
           <LuArrowLeft /> Back to Insights
         </button>
@@ -140,7 +140,7 @@ const IncomeVsExpense = () => {
 
             <div className="flex flex-wrap items-center gap-3">
               {/* Type toggle */}
-              <div className="flex bg-gray-100 rounded-lg p-1">
+              <div className="flex bg-gray-100 dark:bg-gray-700/50 rounded-lg p-1">
                 {TYPE_OPTIONS.map((opt) => (
                   <button
                     key={opt.key}
@@ -148,8 +148,8 @@ const IncomeVsExpense = () => {
                     onClick={() => handleTypeChange(opt.key)}
                     className={`text-xs px-3 py-1.5 rounded-md ${
                       type === opt.key
-                        ? "bg-white text-primary shadow-sm font-medium"
-                        : "text-gray-500"
+                        ? "bg-white dark:bg-gray-800 text-primary shadow-sm font-medium"
+                        : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
                     {opt.label}
@@ -161,7 +161,7 @@ const IncomeVsExpense = () => {
               <select
                 value={account}
                 onChange={(e) => setAccount(e.target.value)}
-                className="text-xs border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:border-primary"
+                className="text-xs border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 focus:outline-none focus:border-primary"
               >
                 <option value="all">All accounts</option>
                 {funds.length > 0 && (
@@ -185,7 +185,7 @@ const IncomeVsExpense = () => {
               </select>
 
               {/* Range toggle */}
-              <div className="flex bg-gray-100 rounded-lg p-1">
+              <div className="flex bg-gray-100 dark:bg-gray-700/50 rounded-lg p-1">
                 {RANGE_OPTIONS.map((m) => (
                   <button
                     key={m}
@@ -193,8 +193,8 @@ const IncomeVsExpense = () => {
                     onClick={() => setMonths(m)}
                     className={`text-xs px-3 py-1.5 rounded-md ${
                       months === m
-                        ? "bg-white text-primary shadow-sm font-medium"
-                        : "text-gray-500"
+                        ? "bg-white dark:bg-gray-800 text-primary shadow-sm font-medium"
+                        : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
                     {m}m
@@ -221,15 +221,15 @@ const IncomeVsExpense = () => {
             {data.map((row) => (
               <div
                 key={row.month}
-                className="rounded-lg border border-gray-100 p-3"
+                className="rounded-lg border border-gray-100 dark:border-gray-700 p-3"
               >
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-gray-700">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                     {row.month}
                   </p>
                   <span
                     className={`text-sm font-semibold ${
-                      row.net >= 0 ? "text-gray-800" : "text-rose-600"
+                      row.net >= 0 ? "text-gray-800 dark:text-gray-200" : "text-rose-600"
                     }`}
                   >
                     {money(row.net)}
@@ -257,7 +257,7 @@ const IncomeVsExpense = () => {
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-gray-400 border-b border-gray-100">
+                <tr className="text-left text-gray-400 border-b border-gray-100 dark:border-gray-700">
                   <th className="py-2 pr-4 font-medium">Month</th>
                   <th className="py-2 px-4 font-medium text-right">Income</th>
                   <th className="py-2 px-4 font-medium text-right">Expense</th>
@@ -267,7 +267,7 @@ const IncomeVsExpense = () => {
               <tbody>
                 {data.map((row) => (
                   <tr key={row.month} className="border-b border-gray-50">
-                    <td className="py-2.5 pr-4 text-gray-700 whitespace-nowrap">
+                    <td className="py-2.5 pr-4 text-gray-700 dark:text-gray-200 whitespace-nowrap">
                       {row.month}
                     </td>
                     <td className="py-2.5 px-4 text-right text-green-600">
@@ -278,7 +278,7 @@ const IncomeVsExpense = () => {
                     </td>
                     <td
                       className={`py-2.5 pl-4 text-right font-medium ${
-                        row.net >= 0 ? "text-gray-800" : "text-rose-600"
+                        row.net >= 0 ? "text-gray-800 dark:text-gray-200" : "text-rose-600"
                       }`}
                     >
                       {money(row.net)}

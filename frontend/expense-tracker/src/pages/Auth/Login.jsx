@@ -80,6 +80,15 @@ const Login = () => {
             type="password"
           />
 
+          <div className='flex justify-end'>
+            <Link
+              className='text-[13px] font-medium text-primary underline mb-2.5'
+              to="/forgot-password"
+            >
+              Forgot Password?
+            </Link>
+          </div>
+
           {error && <p className='text-red-500 text-xs pb-2.5'>{error}</p>}
 
           <button type="submit" className='btn-primary' disabled={loading}>

@@ -27,16 +27,16 @@ const TransactionInfoCard = ({
 }) => {
   const getAmountStyles = () =>
     type === "income"
-      ? "bg-green-50 text-green-500"
-      : "bg-red-50 text-red-500";
+      ? "bg-green-50 dark:bg-green-500/10 text-green-500 dark:text-green-400"
+      : "bg-red-50 dark:bg-red-500/10 text-red-500 dark:text-red-400";
 
   // Prefer a preset icon; fall back to a raw string (legacy emoji data) or a default.
   const iconOption = getIconOption(icon);
   const PresetIcon = iconOption?.Icon;
 
   return (
-    <div className="group relative flex items-start gap-3 sm:gap-4 mt-2 p-3 rounded-lg hover:bg-gray-100/60">
-      <div className="shrink-0 w-12 h-12 flex items-center justify-center text-xl text-gray-800 bg-gray-100 rounded-full">
+    <div className="group relative flex items-start gap-3 sm:gap-4 mt-2 p-3 rounded-lg hover:bg-gray-100/60 dark:hover:bg-gray-700/40">
+      <div className="shrink-0 w-12 h-12 flex items-center justify-center text-xl text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-700/50 rounded-full">
         {PresetIcon ? (
           <PresetIcon />
         ) : icon ? (
@@ -50,9 +50,9 @@ const TransactionInfoCard = ({
         {/* Title + amount on one line; amount stays pinned to the right. */}
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex items-center gap-2 flex-wrap">
-            <p className="text-sm text-gray-700 font-medium">{title}</p>
+            <p className="text-sm text-gray-700 dark:text-gray-200 font-medium">{title}</p>
             {recurring && (
-              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-purple-50 text-primary">
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-purple-50 dark:bg-purple-500/10 text-primary">
                 Recurring
               </span>
             )}
@@ -74,7 +74,7 @@ const TransactionInfoCard = ({
         <div className="flex items-end justify-between gap-2 mt-1">
           <div className="min-w-0">
             {(method || fundName || cardName || notes) && (
-              <p className="text-xs text-gray-500 capitalize">
+              <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
                 {[method, fundName || cardName].filter(Boolean).join(" · ")}
                 {notes && (
                   <>

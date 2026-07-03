@@ -13,7 +13,7 @@ import CustomTooltip from "./CustomTooltip";
 // Area/line chart used on the Expense page to show spend over time.
 const CustomLineChart = ({ data }) => {
   return (
-    <div className="bg-white mt-6">
+    <div className="bg-white dark:bg-gray-800 mt-6">
       <ResponsiveContainer width="100%" height={300}>
         <AreaChart data={data}>
           <defs>

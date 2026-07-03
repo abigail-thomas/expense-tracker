@@ -7,6 +7,21 @@ const UserSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     profileImageUrl: { type: String, default: null },
+    // Set when a password reset is requested. We store only a hash of the
+    // token (never the raw token) and an expiry; both are cleared on use.
+    resetPasswordToken: { type: String, default: null },
+    resetPasswordExpires: { type: Date, default: null },
+
+    // UI preferences (Settings page). All have sensible defaults so existing
+    // users keep the original look until they change anything.
+    theme: { type: String, enum: ["light", "dark"], default: "light" },
+    monogramColor: { type: String, default: "#875cf5" }, // theme purple
+    monogramCase: { type: String, enum: ["upper", "lower"], default: "upper" },
+    monogramTextSize: {
+      type: String,
+      enum: ["sm", "md", "lg"],
+      default: "md",
+    },
   },
   { timestamps: true }
 );

@@ -27,7 +27,7 @@ const FundSelector = ({ label = "Fund", selectedId, onSelect }) => {
 
   return (
     <div className="mb-4">
-      <label className="text-[13px] text-slate-800">{label}</label>
+      <label className="text-[13px] text-slate-800 dark:text-gray-200">{label}</label>
 
       <div className="grid grid-cols-3 gap-2 mt-2">
         {funds.map((fund) => {
@@ -41,8 +41,8 @@ const FundSelector = ({ label = "Fund", selectedId, onSelect }) => {
               aria-pressed={isActive}
               className={`flex flex-col items-center justify-center gap-1 py-2 md:py-3 px-2 rounded-lg border transition-colors cursor-pointer ${
                 isActive
-                  ? "border-primary bg-purple-50 text-primary"
-                  : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                  ? "border-primary bg-purple-50 dark:bg-purple-500/10 text-primary"
+                  : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/40"
               }`}
             >
               {option ? (

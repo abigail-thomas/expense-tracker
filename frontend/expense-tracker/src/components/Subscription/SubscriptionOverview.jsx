@@ -38,7 +38,7 @@ const SubscriptionOverview = ({ subscriptions, onAddSubscription }) => {
         <p className="text-xs text-gray-400">
           Estimated monthly cost{activeCount ? ` (${activeCount} active)` : ""}
         </p>
-        <h4 className="text-2xl font-medium text-gray-800 mt-1">
+        <h4 className="text-2xl font-medium text-gray-800 dark:text-gray-200 mt-1">
           ${addThousandsSeparator(monthlyTotal)}
         </h4>
       </div>

@@ -50,11 +50,11 @@ const InfoTip = ({ detail, maturity }) => {
       <LuInfo
         tabIndex={0}
         aria-label={aria}
-        className="text-sm text-gray-400 cursor-help outline-none hover:text-gray-500"
+        className="text-sm text-gray-400 cursor-help outline-none hover:text-gray-500 dark:hover:text-gray-400"
       />
       <span
         role="tooltip"
-        className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-normal opacity-0 shadow-lg transition-opacity group-hover/tip:opacity-100 group-focus-within/tip:opacity-100"
+        className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-xs font-normal opacity-0 shadow-lg transition-opacity group-hover/tip:opacity-100 group-focus-within/tip:opacity-100"
       >
         {detail && (
           <span className="block font-medium text-emerald-600">{detail}</span>
@@ -192,7 +192,7 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
         <button
           type="button"
           onClick={openAdd}
-          className="flex items-center gap-1 text-xs font-medium text-primary bg-purple-50 px-3 py-1.5 rounded-lg cursor-pointer"
+          className="flex items-center gap-1 text-xs font-medium text-primary bg-purple-50 dark:bg-purple-500/10 px-3 py-1.5 rounded-lg cursor-pointer"
         >
           <LuPlus /> Add Fund
         </button>
@@ -207,14 +207,14 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
           return (
             <div
               key={fund._id}
-              className="group flex items-center justify-between gap-3 p-3 rounded-lg hover:bg-gray-100/60"
+              className="group flex items-center justify-between gap-3 p-3 rounded-lg hover:bg-gray-100/60 dark:hover:bg-gray-700/50"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 flex items-center justify-center text-lg text-gray-800 bg-gray-100 rounded-full">
+                <div className="w-10 h-10 flex items-center justify-center text-lg text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-700/50 rounded-full">
                   {option ? <option.Icon /> : <LuEllipsis />}
                 </div>
                 <div>
-                  <p className="text-sm text-gray-700 font-medium flex items-center">
+                  <p className="text-sm text-gray-700 dark:text-gray-200 font-medium flex items-center">
                     {fund.name}
                     {hasTip && (
                       <InfoTip detail={fund.interestDetail} maturity={maturity} />
@@ -227,7 +227,7 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-gray-800">
+                <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                   ${addThousandsSeparator(fund.balance || 0)}
                 </span>
                 <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
@@ -235,7 +235,7 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
                     type="button"
                     onClick={() => openEdit(fund)}
                     aria-label={`Edit ${fund.name}`}
-                    className="w-7 h-7 flex items-center justify-center bg-white border border-gray-200 rounded-full text-gray-500 hover:text-primary cursor-pointer"
+                    className="w-7 h-7 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-gray-500 dark:text-gray-400 hover:text-primary cursor-pointer"
                   >
                     <LuPencil className="text-xs" />
                   </button>
@@ -243,7 +243,7 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
                     type="button"
                     onClick={() => deleteFund(fund)}
                     aria-label={`Delete ${fund.name}`}
-                    className="w-7 h-7 flex items-center justify-center bg-white border border-gray-200 rounded-full text-gray-500 hover:text-red-500 cursor-pointer"
+                    className="w-7 h-7 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-gray-500 dark:text-gray-400 hover:text-red-500 cursor-pointer"
                   >
                     <LuTrash2 className="text-xs" />
                   </button>
@@ -259,9 +259,9 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
       </div>
 
       {funds.length > 0 && (
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-          <p className="text-sm font-medium text-gray-500">Total</p>
-          <p className="text-base font-bold text-gray-800">
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total</p>
+          <p className="text-base font-bold text-gray-800 dark:text-gray-200">
             ${addThousandsSeparator(total)}
           </p>
         </div>
@@ -279,7 +279,7 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
               value={editor.name}
               onChange={(e) => setEditor({ ...editor, name: e.target.value })}
               placeholder="Fund name"
-              className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+              className="w-full text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border border-slate-200 dark:border-gray-700 outline-none"
             />
 
             <input
@@ -289,7 +289,7 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
                 setEditor({ ...editor, category: e.target.value })
               }
               placeholder="Notes (optional)"
-              className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+              className="w-full text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border border-slate-200 dark:border-gray-700 outline-none"
             />
 
             {/* Balance + APY side by side to save vertical space */}
@@ -301,7 +301,7 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
                   setEditor({ ...editor, balance: e.target.value })
                 }
                 placeholder="Balance"
-                className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+                className="w-full text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border border-slate-200 dark:border-gray-700 outline-none"
               />
               <div className="relative">
                 <input
@@ -313,7 +313,7 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
                     setEditor({ ...editor, apy: e.target.value })
                   }
                   placeholder="APY"
-                  className="w-full text-sm bg-white rounded px-3 py-2 pr-8 border border-slate-200 outline-none"
+                  className="w-full text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 pr-8 border border-slate-200 dark:border-gray-700 outline-none"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none">
                   %
@@ -322,7 +322,7 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">
+              <label className="block text-xs font-medium text-slate-600 dark:text-gray-400 mb-1">
                 Maturity date (optional)
               </label>
               <input
@@ -331,7 +331,7 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
                 onChange={(e) =>
                   setEditor({ ...editor, maturityDate: e.target.value })
                 }
-                className="w-full text-sm bg-white rounded px-3 py-2 border border-slate-200 outline-none"
+                className="w-full text-sm bg-white dark:bg-gray-800 rounded px-3 py-2 border border-slate-200 dark:border-gray-700 outline-none"
               />
               <p className="text-xs text-gray-400 mt-1">
                 APY earns monthly interest; for CDs, interest stops at the
@@ -350,8 +350,8 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
                     title={opt.label}
                     className={`flex items-center justify-center py-2 rounded-lg border cursor-pointer ${
                       active
-                        ? "border-primary bg-purple-50 text-primary"
-                        : "border-gray-200 text-gray-600 hover:bg-white"
+                        ? "border-primary bg-purple-50 dark:bg-purple-500/10 text-primary"
+                        : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-800"
                     }`}
                   >
                     <opt.Icon className="text-lg" />
@@ -364,7 +364,7 @@ const FundsOverview = ({ onChange, reloadSignal }) => {
               <button
                 type="button"
                 onClick={closeEditor}
-                className="flex items-center gap-1 text-xs font-medium text-gray-600 bg-white border border-gray-200 px-3 py-1.5 rounded-lg cursor-pointer"
+                className="flex items-center gap-1 text-xs font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-lg cursor-pointer"
               >
                 <LuX /> Cancel
               </button>
