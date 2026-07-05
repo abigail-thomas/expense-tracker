@@ -59,7 +59,7 @@ const Home = () => {
           <InfoCard
             icon={<LuHandCoins />}
             label="Total Due"
-            value={addThousandsSeparator(dashboardData?.totalExpense || 0)}
+            value={addThousandsSeparator(dashboardData?.totalDue || 0)}
             color="bg-violet-300"
           />
         </div>

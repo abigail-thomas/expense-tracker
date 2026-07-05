@@ -32,6 +32,26 @@
   @apply w-full flex justify-between gap-3 text-sm text-black bg-slate-100 rounded px-4 py-2.5 md:py-3 mb-3 md:mb-4 mt-2 md:mt-3 border border-slate-200 outline-none dark:text-gray-100 dark:bg-gray-800 dark:border-gray-700;
 }
 
+/* Chrome forces its own light background + dark text on autofilled inputs,
+   which plain `background-color` can't override. The inset box-shadow paints
+   over Chrome's fill, and text-fill-color recolors the text, so autofilled
+   fields match the theme. The long transition defers Chrome's flash-on-fill. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #030712; /* gray-950 */
+  -webkit-box-shadow: 0 0 0 1000px #f1f5f9 inset; /* slate-100 */
+  caret-color: #030712;
+  transition: background-color 5000s ease-in-out 0s;
+}
+html.dark input:-webkit-autofill,
+html.dark input:-webkit-autofill:hover,
+html.dark input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f3f4f6; /* gray-100 */
+  -webkit-box-shadow: 0 0 0 1000px #1f2937 inset; /* gray-800 */
+  caret-color: #f3f4f6;
+}
+
 .btn-primary {
   @apply w-full bg-primary text-white p-2 rounded transition-colors disabled:opacity-60 disabled:cursor-not-allowed;
 }

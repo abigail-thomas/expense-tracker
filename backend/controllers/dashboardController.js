@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Income from "../models/Income.js";
 import Expense from "../models/Expense.js";
 import Fund from "../models/Fund.js";
+import CreditCard from "../models/CreditCard.js";
 import { serverError } from "../middleware/errorMiddleware.js";
 
 // @desc   Aggregated dashboard data for the logged-in user
@@ -29,6 +30,13 @@ export const getDashboardData = async (req, res) => {
     const funds = await Fund.find({ userId: userObjectId }).sort({ createdAt: 1 });
     const fundsTotal = funds.reduce((sum, f) => sum + (f.balance || 0), 0);
 
+    // Total due = money actually owed, i.e. the sum of credit card balances.
+    // Debit purchases are already paid (cash left a fund) so they aren't due;
+    // credit purchases raise a card's balance and payments lower it, so the
+    // card balances already reflect the outstanding amount owed.
+    const cards = await CreditCard.find({ userId: userObjectId });
+    const totalDue = cards.reduce((sum, c) => sum + (c.balance || 0), 0);
+
     // Last 5 income + last 5 expense transactions, combined & sorted
     const recentIncome = await Income.find({ userId: userObjectId })
       .sort({ date: -1 })
@@ -46,6 +54,7 @@ export const getDashboardData = async (req, res) => {
       totalBalance: fundsTotal,
       totalIncome,
       totalExpense,
+      totalDue,
       funds,
       recentTransactions,
     });

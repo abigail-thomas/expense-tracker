@@ -43,18 +43,18 @@ const ForgotPassword = () => {
   return (
     <AuthLayout>
       <div className="lg:w-[70%] h-3/4 md:h-full flex flex-col justify-center">
-        <h3 className="text-xl font-semibold text-black">Forgot Password</h3>
-        <p className="text-xs text-slate-700 mt-[5px] mb-6">
+        <h3 className="text-xl font-semibold text-black dark:text-white">Forgot Password</h3>
+        <p className="text-xs text-slate-700 dark:text-gray-400 mt-[5px] mb-6">
           Enter your email and we'll send you a link to reset your password.
         </p>
 
         {submitted ? (
           <>
-            <p className="text-sm text-slate-700">
+            <p className="text-sm text-slate-700 dark:text-gray-400">
               If an account with that email exists, a password reset link has
               been sent. The link is valid for 1 hour.
             </p>
-            <p className="text-[13px] text-slate-800 mt-6">
+            <p className="text-[13px] text-slate-800 dark:text-gray-300 mt-6">
               <Link className="font-medium text-primary underline" to="/login">
                 Back to Login
               </Link>
@@ -76,7 +76,7 @@ const ForgotPassword = () => {
               {loading ? "Sending..." : "Send Reset Link"}
             </button>
 
-            <p className="text-[13px] text-slate-800 mt-3">
+            <p className="text-[13px] text-slate-800 dark:text-gray-300 mt-3">
               Remember your password?{"  "}
               <Link className="font-medium text-primary underline" to="/login">
                 Back to Login

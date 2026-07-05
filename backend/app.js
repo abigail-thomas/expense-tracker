@@ -31,12 +31,24 @@ const app = express();
 app.use(helmet());
 
 // Lock CORS to the configured frontend origin. In production CLIENT_URL is
-// required (validateEnv enforces it); locally it defaults to the Vite dev
-// server. No more silent "*" fallback.
+// required (validateEnv enforces it) and is the ONLY allowed origin. In
+// development we also accept any localhost/127.0.0.1 port, because Vite hops to
+// the next free port (5173 -> 5174 -> 5175 ...) when earlier ones are taken,
+// and a hard-coded 5173 would silently break login with a CORS preflight error.
+const isProduction = process.env.NODE_ENV === "production";
 const allowedOrigin = process.env.CLIENT_URL || "http://localhost:5173";
+const corsOrigin = (origin, callback) => {
+  // Non-browser clients (curl, same-origin, mobile) send no Origin header.
+  if (!origin) return callback(null, true);
+  if (origin === allowedOrigin) return callback(null, true);
+  if (!isProduction && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+    return callback(null, true);
+  }
+  return callback(new Error(`Origin ${origin} not allowed by CORS`));
+};
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: corsOrigin,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })

@@ -39,7 +39,7 @@ const ProfilePhotoSelector = ({ setImage, initialPreview = null }) => {
       />
 
       {!displayUrl ? (
-        <div className="w-20 h-20 flex items-center justify-center bg-purple-100 rounded-full relative">
+        <div className="w-20 h-20 flex items-center justify-center bg-purple-100 dark:bg-purple-500/15 rounded-full relative">
           <LuUser className="text-4xl text-primary" />
           <button
             type="button"
